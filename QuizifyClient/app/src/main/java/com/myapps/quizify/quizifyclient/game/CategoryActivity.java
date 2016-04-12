@@ -16,7 +16,7 @@ import java.util.List;
 
 public class CategoryActivity extends Activity {
 
-    private List categories = Arrays.asList(new String[]{"Rock", "Salsa", "Ipsum", "Something else", "Anything but Justin Bieber"});
+    private List categories = Arrays.asList(new String[]{"Rock", "Salsa", "Ipsum", "Something else", "Anything but Justin Bieber", "Hello world"});
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
