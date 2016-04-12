@@ -1,4 +1,4 @@
-package com.myapps.quizify.quizifyclient.logIn.util;
+package com.myapps.quizify.quizifyclient.util;
 
 import android.app.Activity;
 import android.view.View;

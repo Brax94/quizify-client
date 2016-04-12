@@ -1,4 +1,4 @@
-package com.myapps.quizify.quizifyclient.logIn;
+package com.myapps.quizify.quizifyclient.mainMenu;
 
 import com.myapps.quizify.quizifyclient.util.SystemUiHider;
 
@@ -18,7 +18,7 @@ import com.myapps.quizify.quizifyclient.R;
  *
  * @see SystemUiHider
  */
-public class RegistrerAccount extends Activity {
+public class MainMenuActivity extends Activity {
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -51,7 +51,7 @@ public class RegistrerAccount extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_registrer_account);
+        setContentView(R.layout.activity_main_menu);
 
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
         final View contentView = findViewById(R.id.fullscreen_content);
