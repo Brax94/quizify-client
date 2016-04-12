@@ -1,12 +1,16 @@
 package com.myapps.quizify.quizifyclient.mainMenu;
 
+import com.myapps.quizify.quizifyclient.logIn.QuizifyLogin;
 import com.myapps.quizify.quizifyclient.util.SystemUiHider;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -50,6 +54,18 @@ public class MainMenuActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Checks if logged in - TODO: Create some sort of session for login + autologin?
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean isLogin = prefs.getBoolean("isLogin", false); // get value of last login status
+
+        if(!isLogin){
+            Intent logInIntent = new Intent(this, QuizifyLogin.class);
+            startActivity(logInIntent);
+        }
+        //Makes you log in every time - TODO: REMOVE WHEN DONE TESTING
+        prefs.edit().putBoolean("isLogin", false).commit();
 
         setContentView(R.layout.activity_main_menu);
 
@@ -158,4 +174,5 @@ public class MainMenuActivity extends Activity {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
+
 }

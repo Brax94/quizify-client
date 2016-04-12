@@ -6,13 +6,16 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -26,6 +29,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.myapps.quizify.quizifyclient.R;
+import com.myapps.quizify.quizifyclient.mainMenu.MainMenuActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +44,7 @@ public class QuizifyLogin extends Activity implements LoaderCallbacks<Cursor> {
      * TODO: remove after connecting to a real authentication system.
      */
     private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
+            "eliasbh@stud.no:password", "sindrefl@stud.no:password"
     };
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -53,8 +57,12 @@ public class QuizifyLogin extends Activity implements LoaderCallbacks<Cursor> {
     private View mProgressView;
     private View mLoginFormView;
 
+    //To check if logged in
+    private boolean isLogin;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        isLogin = false;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quizify_login);
 
@@ -81,6 +89,7 @@ public class QuizifyLogin extends Activity implements LoaderCallbacks<Cursor> {
                 attemptLogin();
             }
         });
+        registerAction();
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
@@ -287,6 +296,16 @@ public class QuizifyLogin extends Activity implements LoaderCallbacks<Cursor> {
 
             if (success) {
                 finish();
+                isLogin = true;
+                //Set shared prefs isLogin true for later access
+                //TODO: Also save login info for later auth against server
+
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(QuizifyLogin.this);
+                prefs.edit().putBoolean("isLogin", isLogin).commit();
+
+
+                Intent intent = new Intent(QuizifyLogin.this, MainMenuActivity.class);
+                startActivity(intent);
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
@@ -299,5 +318,16 @@ public class QuizifyLogin extends Activity implements LoaderCallbacks<Cursor> {
             showProgress(false);
         }
     }
+    public void registerAction(){
+        Button register = (Button) findViewById(R.id.register_button);
+        register.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent register = new Intent(QuizifyLogin.this, RegistrerAccount.class);
+                startActivity(register);
+            }
+        });
+    }
+
 }
 
