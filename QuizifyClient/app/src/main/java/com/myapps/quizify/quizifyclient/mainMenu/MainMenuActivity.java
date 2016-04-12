@@ -1,5 +1,6 @@
 package com.myapps.quizify.quizifyclient.mainMenu;
 
+import com.myapps.quizify.quizifyclient.game.CategoryActivity;
 import com.myapps.quizify.quizifyclient.logIn.QuizifyLogin;
 import com.myapps.quizify.quizifyclient.util.SystemUiHider;
 
@@ -11,8 +12,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 
 import com.myapps.quizify.quizifyclient.R;
 
@@ -68,6 +71,9 @@ public class MainMenuActivity extends Activity {
         prefs.edit().putBoolean("isLogin", false).commit();
 
         setContentView(R.layout.activity_main_menu);
+
+
+
 
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
         final View contentView = findViewById(R.id.fullscreen_content);
@@ -130,6 +136,20 @@ public class MainMenuActivity extends Activity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+
+
+        Button but =(Button) findViewById(R.id.dummy_button);
+        but.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainMenuActivity.this, CategoryActivity.class);
+                startActivity(i);
+            }
+        });
+
+
+
+
     }
 
     @Override

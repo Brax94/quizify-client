@@ -12,4 +12,34 @@
     tools:context="com.myapps.quizify.quizifyclient.game.CategoryActivity"
     tools:showIn="@layout/activity_category">
 
+    <Button android:id="@+id/btn1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <Button android:id="@+id/btn2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn1"
+        />
+    <Button android:id="@+id/btn3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn2"
+        />
+    <Button android:id="@+id/btn4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn3"
+        />
+    <Button android:id="@+id/btn5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn4"
+        />
+    <Button android:id="@+id/btn6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn5"
+        />
+
+
 </RelativeLayout>
