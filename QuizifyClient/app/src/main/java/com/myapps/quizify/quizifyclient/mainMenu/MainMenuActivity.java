@@ -41,7 +41,7 @@ public class MainMenuActivity extends Activity {
             startActivity(logInIntent);
         }
         //Makes you log in every time - TODO: REMOVE WHEN DONE TESTING
-        prefs.edit().putBoolean("isLogin", false).commit();
+        //prefs.edit().putBoolean("isLogin", false).commit();
 
         setContentView(R.layout.activity_main_menu);
 
@@ -70,7 +70,7 @@ public class MainMenuActivity extends Activity {
             System.out.println(players);
             yourTurnGames.add(players);
         }
-        ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, yourTurnGames);
+        ArrayAdapter arrayAdapter = new ArrayAdapter(this, R.layout.list_cosmetics ,R.id.list_text_cosmetics, yourTurnGames);
         ListView yourTurnListView = (ListView) findViewById(R.id.yourTurnList);
         yourTurnListView.setAdapter(arrayAdapter);
         yourTurnListView.setEnabled(true);

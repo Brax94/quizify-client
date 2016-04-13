@@ -9,7 +9,7 @@
     style="@style/AppTheme.NoActionBar">
 
 
-        <LinearLayout android:id="@+id/email_login_form" android:layout_width="match_parent"
+        <LinearLayout android:id="@+id/main_menu" android:layout_width="match_parent"
             android:layout_height="wrap_content" android:orientation="vertical">
 
             <TextView
@@ -28,15 +28,24 @@
                 android:text="@string/new_game"
                 android:textColor="#ffffff"
                 android:background="#3a3a3a"
-                style="@android:style/ButtonBar"
+                style="@android:style/Holo.ButtonBar"
                 android:layout_marginTop="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"/>
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/your_turn"
+                android:textColor="#3a3a3a"
+                android:textSize="20sp"
+                android:backgroundTint="@color/wallet_bright_foreground_holo_light"/>
 
             <ListView
                 android:id="@+id/yourTurnList"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp">
             </ListView>
 
         </LinearLayout>
