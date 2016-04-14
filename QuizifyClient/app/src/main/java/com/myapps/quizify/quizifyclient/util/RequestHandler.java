@@ -6,6 +6,7 @@ import com.android.volley.Cache;
 import com.android.volley.Network;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
@@ -15,7 +16,7 @@ import org.json.JSONObject;
 /**
  * Custom implementation of Volley Request Queue
  */
-public class RequestHandler{
+public class RequestHandler implements Response.ErrorListener{
 
     private static RequestHandler mInstance;
     private static Context mCtx;
@@ -42,5 +43,10 @@ public class RequestHandler{
             mRequestQueue.start();
         }
         return mRequestQueue;
+    }
+
+    @Override
+    public void onErrorResponse(VolleyError error) {
+        //Todo: implement error handling
     }
 }

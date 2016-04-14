@@ -12,4 +12,10 @@
     tools:context="com.myapps.quizify.quizifyclient.mainMenu.NewGame"
     tools:showIn="@layout/activity_new_game">
 
+    <Button android:id="@+id/Categories"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="To Categories"/>
+
+
 </RelativeLayout>

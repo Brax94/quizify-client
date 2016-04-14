@@ -1,6 +1,7 @@
 package com.myapps.quizify.quizifyclient.game;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -24,13 +25,13 @@ import org.json.JSONObject;
 import java.util.Arrays;
 import java.util.List;
 
-public class CategoryActivity extends Activity implements Response.ErrorListener{
+public class CategoryActivity extends Activity{
 
     //Todo: implement via server
-    private List categories = Arrays.asList(new String[]{"Send request1", "Send request2", "Ipsum", "Something else", "Anything but Justin Bieber", "Hello world"});
+    private List categories = Arrays.asList(new String[]{"Send request1", "Send request2", "TO ROUND", "Something else", "Anything but Justin Bieber", "Hello world"});
 
     private RequestQueue mQueue;
-    private static String url = "http://127.0.0.1:8000/categories/?format=json";
+    private static String url = "http://localhost:8000/categories/?format=json";
     private static String dummy = "http://echo.jsontest.com/title/ipsum/content/blah";
     private static String dummy2 = "http://echo.jsontest.com/key/value/one/two";
 
@@ -44,7 +45,7 @@ public class CategoryActivity extends Activity implements Response.ErrorListener
 
         setContentView(R.layout.activity_category);
 
-        Button btn =(Button) findViewById(R.id.btn1);
+        final Button btn =(Button) findViewById(R.id.btn1);
         btn.setText((CharSequence) categories.get(0));
 
         btn.setOnClickListener(new View.OnClickListener(){
@@ -54,10 +55,15 @@ public class CategoryActivity extends Activity implements Response.ErrorListener
                         new JSONObject(), new Response.Listener<JSONObject>(){
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.d("Call1", response.toString());
-
+                        String text = "";
+                        try {
+                            text = response.getString("content");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        btn.setText(text);
                     }
-                }, CategoryActivity.this);
+                }, RequestHandler.getInstance(CategoryActivity.this.getApplicationContext()));
                 mQueue.add(jsonRequest);
             }
         });
@@ -70,22 +76,20 @@ public class CategoryActivity extends Activity implements Response.ErrorListener
         btn1.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                Log.d("Hello", "button one clicked");
-                final JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, dummy2,
+
+                final JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, url,
                         new JSONObject(), new Response.Listener(){
                     @Override
                     public void onResponse(Object response) {
-                        sendToLog("Call2",((JSONObject) response).toString());
-                        String text = "Hello world";
+                        String text = "";
                         try {
-                            text = ((JSONObject) response).getString("one");
+                            text = ((JSONObject) response).getString("name");
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-
                         btn1.setText(text);
                     }
-                }, CategoryActivity.this);
+                }, RequestHandler.getInstance(CategoryActivity.this.getApplicationContext()));
                 mQueue.add(jsonRequest);
             }
         });
@@ -93,6 +97,15 @@ public class CategoryActivity extends Activity implements Response.ErrorListener
 
         Button btn2 =(Button) findViewById(R.id.btn3);
         btn2.setText((CharSequence) categories.get(2));
+
+        btn2.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(CategoryActivity.this, RoundActivity.class);
+                startActivity(i);
+            }
+        });
+
 
         Button btn3 =(Button) findViewById(R.id.btn4);
         btn3.setText((CharSequence) categories.get(3));
@@ -107,16 +120,5 @@ public class CategoryActivity extends Activity implements Response.ErrorListener
     @Override
     protected void onStart() {
         super.onStart();
-    }
-
-
-
-    @Override
-    public void onErrorResponse(VolleyError error) {
-        Log.d("Error", error.toString());
-    }
-
-    private void sendToLog(String s, String s2){
-        Log.d(s,s2);
     }
 }
