@@ -7,10 +7,15 @@ import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.ActionBarActivity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 
 import com.myapps.quizify.quizifyclient.R;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -19,6 +24,11 @@ import com.myapps.quizify.quizifyclient.R;
  * @see SystemUiHider
  */
 public class RoundActivity extends Activity {
+
+
+    //Todo: implement list with server
+    private List alternatives = Arrays.asList(new String[]{"Alternative 1", "Alternative 2", "Alternative 3", "Alternative 4"});
+
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -114,7 +124,31 @@ public class RoundActivity extends Activity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+
+
+
+        Button btn =(Button) findViewById(R.id.alternative1);
+        btn.setText((CharSequence) alternatives.get(0));
+
+        btn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                //Todo: Handler.sendHttp-Req
+            }
+        });
+
+        Button btn1 =(Button) findViewById(R.id.alternative2);
+        btn1.setText((CharSequence) alternatives.get(1));
+
+        Button btn2 =(Button) findViewById(R.id.alternative3);
+        btn2.setText((CharSequence) alternatives.get(2));
+
+        Button btn3 =(Button) findViewById(R.id.alternative4);
+        btn3.setText((CharSequence) alternatives.get(3));
+
     }
+
+
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
