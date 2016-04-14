@@ -33,7 +33,7 @@ public class MainMenuActivity extends Activity {
 
         //Checks if logged in - TODO: Create some sort of session for login + autologin?
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean isLogin = prefs.getBoolean("isLogin", false); // get value of last login status
 
         if(!isLogin){
@@ -53,6 +53,16 @@ public class MainMenuActivity extends Activity {
                 startActivity(newGame);
             }
         });
+
+        Button sign_out = (Button) findViewById(R.id.signOut_button);
+        sign_out.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent signOut = new Intent(MainMenuActivity.this, QuizifyLogin.class);
+                startActivity(signOut);
+                prefs.edit().putBoolean("isLogin", false).commit();
+            }
+        });
         renderYourTurns(urturn);
 
     }
@@ -63,7 +73,7 @@ public class MainMenuActivity extends Activity {
     }
 
     ArrayList<String> yourTurnGames = new ArrayList<>();
-    String[] urturn = {"Sindrefl", "morten", "andreas"};
+    String[] urturn = {"Sindrefl", "morten", "andreas","Sindrefl", "morten"};
 
     public void renderYourTurns(String[] games){
         for(String players : games){

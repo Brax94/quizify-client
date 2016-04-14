@@ -8,47 +8,83 @@
     android:background="#000000"
     style="@style/AppTheme.NoActionBar">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textColor="#ffffff"
+            android:textSize="30sp"
+            android:gravity="center_horizontal"
+            android:fontFamily="monospace"/>
 
-        <LinearLayout android:id="@+id/main_menu" android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:orientation="vertical">
+        <Button
+            android:id="@+id/new_game"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/new_game"
+            android:textColor="#ffffff"
+            android:background="#3a3a3a"
+            style="@android:style/Holo.ButtonBar"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:padding="15dp"/>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/app_name"
-                android:textColor="#ffffff"
-                android:textSize="30sp"
-                android:gravity="center_horizontal"
-                android:fontFamily="monospace"/>
+        <ListView
+            android:id="@+id/yourInvites"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp">
+        </ListView>
 
-            <Button
-                android:id="@+id/new_game"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/new_game"
-                android:textColor="#ffffff"
-                android:background="#3a3a3a"
-                style="@android:style/Holo.ButtonBar"
-                android:layout_marginTop="16dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/your_turn"
+            android:textColor="#3a3a3a"
+            android:textSize="20sp"
+            />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/your_turn"
-                android:textColor="#3a3a3a"
-                android:textSize="20sp"
-                android:backgroundTint="@color/wallet_bright_foreground_holo_light"/>
+        <ListView
+            android:id="@+id/yourTurnList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp">
+        </ListView>
 
-            <ListView
-                android:id="@+id/yourTurnList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp">
-            </ListView>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/their_turn"
+            android:textColor="#3a3a3a"
+            android:textSize="20sp"
+            android:backgroundTint="@android:color/holo_green_dark"/>
 
-        </LinearLayout>
+        <ListView
+            android:id="@+id/theirTurnList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"></ListView>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/pending"
+            android:textColor="#3a3a3a"
+            android:textSize="20sp"
+            android:backgroundTint="@color/wallet_bright_foreground_holo_light"/>
 
+        <ListView
+            android:id="@+id/pendingList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp">></ListView>
+    <Button
+        android:id="@+id/signOut_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sign Out"
+        android:padding="16dp"
+        android:background="#3a3a3a"
+        android:textColor="#ffffff"/>
 </LinearLayout>
