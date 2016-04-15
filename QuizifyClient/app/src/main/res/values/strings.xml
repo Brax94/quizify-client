@@ -10,11 +10,14 @@
     <string name="title_activity_round">RoundActivity</string>
     <string name="title_activity_category">CategoryActivity</string>
 
+    <string name="title_activity_new_game">New Game</string>
+
     <!--Main Menu String Collection-->
     <string name="new_game">New Game</string>
     <string name="your_turn">Your Turn</string>
     <string name="their_turn">Their Turn</string>
     <string name="pending">Invitation Pending</string>
-    <string name="title_activity_new_game">NewGame</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="invites">Your Invites</string>
 
 </resources>
