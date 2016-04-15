@@ -22,10 +22,11 @@ import com.myapps.quizify.quizifyclient.util.RequestHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class CategoryActivity extends Activity{
+public class CategoryActivity extends Activity implements Response.ErrorListener{
 
     //Todo: implement via server
     private List categories = Arrays.asList(new String[]{"Send request1", "Send request2", "TO ROUND", "Something else", "Anything but Justin Bieber", "Hello world"});
@@ -42,6 +43,8 @@ public class CategoryActivity extends Activity{
 
         mQueue = RequestHandler.getInstance(this.getApplicationContext())
                 .getRequestQueue();
+
+        initCategories();
 
         setContentView(R.layout.activity_category);
 
@@ -77,20 +80,7 @@ public class CategoryActivity extends Activity{
             @Override
             public void onClick(View v) {
 
-                final JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, url,
-                        new JSONObject(), new Response.Listener(){
-                    @Override
-                    public void onResponse(Object response) {
-                        String text = "";
-                        try {
-                            text = ((JSONObject) response).getString("name");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        btn1.setText(text);
-                    }
-                }, RequestHandler.getInstance(CategoryActivity.this.getApplicationContext()));
-                mQueue.add(jsonRequest);
+
             }
         });
 
@@ -102,6 +92,7 @@ public class CategoryActivity extends Activity{
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(CategoryActivity.this, RoundActivity.class);
+                i.putExtra("scores", new ArrayList<Integer>());
                 startActivity(i);
             }
         });
@@ -120,5 +111,32 @@ public class CategoryActivity extends Activity{
     @Override
     protected void onStart() {
         super.onStart();
+    }
+
+    private void initCategories(){
+        //TODO
+    }
+
+    private void chooseCategory(){
+
+
+        /*
+        final JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, url,
+                new JSONObject(), new Response.Listener<JSONObject>(){
+            @Override
+            public void onResponse(JSONObject response) {
+                Intent i = new Intent(CategoryActivity.this, RoundActivity.class);
+                i.putExtra("JSON", response.toString());
+                i.putExtra("scores", new ArrayList<Integer>());
+                startActivity(i);
+            }
+        }, CategoryActivity.this);
+        mQueue.add(jsonRequest);
+*/
+    }
+
+    @Override
+    public void onErrorResponse(VolleyError error) {
+        //WHAT TODO?
     }
 }
