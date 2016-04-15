@@ -42,7 +42,6 @@
             android:name=".game.CategoryActivity"
             android:label="@string/title_activity_category"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".mainMenu.Dummy" />
         <activity
             android:name=".mainMenu.NewGame"
             android:label="@string/title_activity_new_game"

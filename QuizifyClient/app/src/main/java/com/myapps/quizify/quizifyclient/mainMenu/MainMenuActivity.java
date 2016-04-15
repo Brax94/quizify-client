@@ -22,11 +22,17 @@ import android.widget.ListView;
 import com.myapps.quizify.quizifyclient.R;
 import com.myapps.quizify.quizifyclient.util.Utility;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 /**
  */
 public class MainMenuActivity extends Activity {
+
+    final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +40,6 @@ public class MainMenuActivity extends Activity {
 
         //Checks if logged in - TODO: Create some sort of session for login + autologin?
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean isLogin = prefs.getBoolean("isLogin", false); // get value of last login status
 
         if(!isLogin){
@@ -106,5 +111,36 @@ public class MainMenuActivity extends Activity {
         pendingList.setEnabled(true);
 
 
+    }
+
+    //Arrays for sorting games to be run through custom adaptor
+    private ArrayList<JSONObject> invites = new ArrayList<>();
+    private ArrayList<JSONObject> yourTurn = new ArrayList<>();
+    private ArrayList<JSONObject> theirTurn = new ArrayList<>();
+    private ArrayList<JSONObject> pending = new ArrayList<>();
+
+    //TODO:Make sure this method always corresponds with json file from server!
+
+    public void sortJasonRequest(JSONArray games) throws JSONException {
+        for(int i = 0; i < games.length(); i++){
+            JSONObject game = games.getJSONObject(i);
+            if(game.getString("invitation_status").equals("accepted")){
+                JSONArray array = game.getJSONArray("rounds");
+                if(array.getJSONObject(array.length()-1).getJSONObject("whos_turn").getString("username").equals(prefs.getString("username", "#noValidUsername"))){
+                    yourTurn.add(game);
+                }
+                else {
+                    theirTurn.add(game);
+                }
+            }
+            else{
+                if(game.getJSONObject("player1").getString("username").equals(prefs.getString("username", "#noValidUsername"))){
+                    pending.add(game);
+                }
+                else{
+                    invites.add(game);
+                }
+            }
+        }
     }
 }
