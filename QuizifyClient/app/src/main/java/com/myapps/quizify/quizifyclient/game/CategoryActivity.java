@@ -157,8 +157,7 @@ public class CategoryActivity extends Activity implements Response.ErrorListener
             //TODO: post category choice to server
             //TODO: get resulting song urls and alternatives
             i = new Intent(CategoryActivity.this, RoundActivity.class);
-            i.putExtra("score", 0);
-            i.putExtra("round", 0);
+            i.putExtra("Category", categories.get(category));
         }
         finish();
         startActivity(i);

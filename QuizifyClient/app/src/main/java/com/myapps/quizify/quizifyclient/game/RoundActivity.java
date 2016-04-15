@@ -1,60 +1,34 @@
 package com.myapps.quizify.quizifyclient.game;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.myapps.quizify.quizifyclient.util.RequestHandler;
-import com.myapps.quizify.quizifyclient.util.SystemUiHider;
-
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Handler;
-import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
+import com.android.volley.RequestQueue;
 import com.myapps.quizify.quizifyclient.R;
+import com.myapps.quizify.quizifyclient.util.RequestHandler;
+import com.myapps.quizify.quizifyclient.util.SystemUiHider;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- *
- * @see SystemUiHider
- */
+
 public class RoundActivity extends Activity implements MediaPlayer.OnPreparedListener{
 
 
-    private int score;
-    private int currentRound;
-    private List alternatives = Arrays.asList(new String[]{"Alternative 1", "Alternative 2", "Alternative 3", "Alternative 4"});
-    private String songURL = "https://p.scdn.co/mp3-preview/04fac4f932a798c9dc0eb03e1df2c78081becb6e";
-
-    private String correctAlternative = "Alternative 3";
-
+    private List alternatives;
+    private GameObserver mObserver;
     private MediaPlayer mMediaPlayer;
-
     private RequestQueue mQueue;
 
     private ProgressBar bar;
@@ -64,21 +38,20 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //TODO: initAlternatives();
-        score = getIntent().getIntExtra("score", -1);
-        currentRound = getIntent().getIntExtra("round", -1);
-        //TODO: init song url
-        //TODO: init correct url
+        mObserver = GameObserver.getInstance(getIntent().getStringExtra("Category"));
+
+
+        alternatives = mObserver.getAlternatives();
 
         mQueue = RequestHandler.getInstance(this.getApplicationContext()).getRequestQueue();
         setContentView(R.layout.activity_round);
 
         Button disp = (Button) findViewById(R.id.displayButton);
-        disp.setText((CharSequence) "Score: " + Integer.toString(score));
+        disp.setText((CharSequence) "Score: " + Integer.toString(mObserver.getScore()));
 
 
         Button disp2 = (Button) findViewById(R.id.displayButton2);
-        disp2.setText((CharSequence) "Round number: " + Integer.toString(currentRound + 1));
+        disp2.setText((CharSequence) "Round number: " + Integer.toString(mObserver.getCurrentRound() + 1));
 
 
         Button btn = (Button) findViewById(R.id.alternative);
@@ -124,7 +97,7 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
         mMediaPlayer.setOnPreparedListener(this);
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try{
-            mMediaPlayer.setDataSource(songURL);
+            mMediaPlayer.setDataSource(mObserver.getSongURL());
         }catch (IllegalArgumentException e){
             e.printStackTrace();
 
@@ -137,40 +110,23 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
     }
 
     private void chooseAlternative(int i) {
-        if (correctAlternative.equals(alternatives.get(i))) score += bar.getProgress();
         timer.cancel();
-        moveOn();
-
-
-
-
+        if(mObserver.checkAlternative(i)) moveOn(bar.getProgress());
+        else moveOn(0);
     }
-    private void moveOn(){
+    private void moveOn(int i){
         //TODO Better flow implementation
         mMediaPlayer.stop();
         Intent intent = null;
-        if(++currentRound == 5){
+        if(mObserver.nextRound(i)){
             intent = new Intent(RoundActivity.this, CategoryActivity.class);
             intent.putExtra("previous", "RoundActivity");
         }else{
             intent = new Intent(RoundActivity.this, RoundActivity.class);
-            intent.putExtra("score", score);
-            intent.putExtra("round", currentRound);
+            intent.putExtra("Category", getIntent().getStringExtra("Category"));
         }
         finish();
         startActivity(intent);
-    }
-
-    private void initAlternatives(){
-
-        try {
-            JSONObject Json = new JSONObject(getIntent().getStringExtra("JSON"));
-            //TODO
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
     }
 
     @Override
@@ -188,7 +144,7 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
             public void onFinish() {
                 bar.setProgress(0);
                 mMediaPlayer.stop();
-                moveOn();
+                moveOn(0);
             }
         }.start();
 
