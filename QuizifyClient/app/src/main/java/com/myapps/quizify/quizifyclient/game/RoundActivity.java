@@ -47,6 +47,7 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
 
 
     private int score;
+    private int currentRound;
     private List alternatives = Arrays.asList(new String[]{"Alternative 1", "Alternative 2", "Alternative 3", "Alternative 4"});
     private String songURL = "https://p.scdn.co/mp3-preview/04fac4f932a798c9dc0eb03e1df2c78081becb6e";
 
@@ -63,16 +64,22 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //initAlternatives();
-        initScores();
-
-
+        //TODO: initAlternatives();
+        score = getIntent().getIntExtra("score", -1);
+        currentRound = getIntent().getIntExtra("round", -1);
+        //TODO: init song url
+        //TODO: init correct url
 
         mQueue = RequestHandler.getInstance(this.getApplicationContext()).getRequestQueue();
         setContentView(R.layout.activity_round);
 
         Button disp = (Button) findViewById(R.id.displayButton);
-        disp.setText((CharSequence) Integer.toString(score));
+        disp.setText((CharSequence) "Score: " + Integer.toString(score));
+
+
+        Button disp2 = (Button) findViewById(R.id.displayButton2);
+        disp2.setText((CharSequence) "Round number: " + Integer.toString(currentRound + 1));
+
 
         Button btn = (Button) findViewById(R.id.alternative);
         btn.setText((CharSequence) alternatives.get(0));
@@ -133,21 +140,36 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
         if (correctAlternative.equals(alternatives.get(i))) score += bar.getProgress();
         timer.cancel();
         mMediaPlayer.stop();
+
+
+        //TODO: Better flow implementation
+        Intent intent = null;
+        if(++currentRound == 5){
+            intent = new Intent(RoundActivity.this, CategoryActivity.class);
+            intent.putExtra("previous", "RoundActivity");
+        }else{
+            intent = new Intent(RoundActivity.this, RoundActivity.class);
+            intent.putExtra("score", score);
+            intent.putExtra("round", currentRound);
+        }
+        finish();
+        startActivity(intent);
     }
     private void noChosenAlternative(){
-        this.recreate();
-    }
-
-    private void initScores() {
-        score = getIntent().getIntExtra("score", -1);
+        //TODO Better flow implementation
+        Intent intent = new Intent(RoundActivity.this, RoundActivity.class);
+        intent.putExtra("score", score);
+        intent.putExtra("round", currentRound + 1);
+        finish();
+        startActivity(intent);
     }
 
     private void initAlternatives(){
 
         try {
             JSONObject Json = new JSONObject(getIntent().getStringExtra("JSON"));
-
             //TODO
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -173,5 +195,11 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
             }
         }.start();
 
+    }
+
+    @Override
+    public void finish() {
+        mMediaPlayer.stop();
+        super.finish();
     }
 }

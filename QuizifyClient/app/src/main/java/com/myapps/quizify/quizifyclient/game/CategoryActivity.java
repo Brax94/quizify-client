@@ -1,6 +1,7 @@
 package com.myapps.quizify.quizifyclient.game;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -18,6 +19,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.myapps.quizify.quizifyclient.R;
+import com.myapps.quizify.quizifyclient.mainMenu.MainMenuActivity;
 import com.myapps.quizify.quizifyclient.util.RequestHandler;
 
 import org.json.JSONArray;
@@ -31,7 +33,7 @@ import java.util.List;
 public class CategoryActivity extends Activity implements Response.ErrorListener{
 
     //Todo: implement via server
-    private List categories = Arrays.asList(new String[]{"Send request1", "Send request2", "TO ROUND", "Something else", "Anything but Justin Bieber", "Hello world"});
+    private List<String> categories = Arrays.asList(new String[]{"Test for server: reply wonderwaste", "Cat2", "TO ROUND", "Something else", "Anything but Justin Bieber", "Hello world"});
 
     private RequestQueue mQueue;
     private static String url = "http://kane.royrvik.org:8000/categories/";
@@ -49,6 +51,8 @@ public class CategoryActivity extends Activity implements Response.ErrorListener
         initCategories();
 
         setContentView(R.layout.activity_category);
+
+
 
         final Button btn =(Button) findViewById(R.id.btn1);
         btn.setText((CharSequence) categories.get(0));
@@ -78,12 +82,10 @@ public class CategoryActivity extends Activity implements Response.ErrorListener
         btn1.setText((CharSequence) categories.get(1));
 
 
-        //Changes button text to value of field "one" on response
         btn1.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-
-
+                chooseCategory(1);
             }
         });
 
@@ -94,9 +96,7 @@ public class CategoryActivity extends Activity implements Response.ErrorListener
         btn2.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(CategoryActivity.this, RoundActivity.class);
-                i.putExtra("score", 0);
-                startActivity(i);
+                chooseCategory(2);
             }
         });
 
@@ -104,11 +104,33 @@ public class CategoryActivity extends Activity implements Response.ErrorListener
         Button btn3 =(Button) findViewById(R.id.btn4);
         btn3.setText((CharSequence) categories.get(3));
 
+        btn3.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                chooseCategory(3);
+            }
+        });
+
         Button btn4 =(Button) findViewById(R.id.btn5);
         btn4.setText((CharSequence) categories.get(4));
 
+        btn4.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                chooseCategory(4);
+            }
+        });
+
         Button btn5 =(Button) findViewById(R.id.btn6);
         btn5.setText((CharSequence) categories.get(5));
+
+        btn5.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                chooseCategory(5);
+            }
+        });
+
     }
 
     @Override
@@ -117,11 +139,29 @@ public class CategoryActivity extends Activity implements Response.ErrorListener
     }
 
     private void initCategories(){
-        //TODO
+        //TODO get categories from server
     }
 
-    private void chooseCategory(){
+    private void chooseCategory(int category){
 
+        String chosen = categories.get(category);
+
+        Intent i = null;
+        //TODO: find better implementation of flow?
+        if(getIntent().hasExtra("previous")){
+            if(getIntent().getStringExtra("previous").equals("RoundActivity")){
+               //TODO: post result to server
+               i = new Intent(CategoryActivity.this, MainMenuActivity.class);
+            }
+        }else{
+            //TODO: post category choice to server
+            //TODO: get resulting song urls and alternatives
+            i = new Intent(CategoryActivity.this, RoundActivity.class);
+            i.putExtra("score", 0);
+            i.putExtra("round", 0);
+        }
+        finish();
+        startActivity(i);
 
         /*
         final JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, url,
