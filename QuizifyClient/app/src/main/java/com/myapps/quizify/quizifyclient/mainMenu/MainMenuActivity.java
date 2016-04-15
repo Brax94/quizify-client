@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.myapps.quizify.quizifyclient.R;
+import com.myapps.quizify.quizifyclient.util.Utility;
 
 import java.util.ArrayList;
 
@@ -33,7 +34,7 @@ public class MainMenuActivity extends Activity {
 
         //Checks if logged in - TODO: Create some sort of session for login + autologin?
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean isLogin = prefs.getBoolean("isLogin", false); // get value of last login status
 
         if(!isLogin){
@@ -53,7 +54,17 @@ public class MainMenuActivity extends Activity {
                 startActivity(newGame);
             }
         });
-        renderYourTurns(urturn);
+
+        Button sign_out = (Button) findViewById(R.id.signOut_button);
+        sign_out.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent signOut = new Intent(MainMenuActivity.this, QuizifyLogin.class);
+                startActivity(signOut);
+                prefs.edit().putBoolean("isLogin", false).commit();
+            }
+        });
+        renderLists(urturn);
 
     }
 
@@ -63,9 +74,9 @@ public class MainMenuActivity extends Activity {
     }
 
     ArrayList<String> yourTurnGames = new ArrayList<>();
-    String[] urturn = {"Sindrefl", "morten", "andreas"};
+    String[] urturn = {"Sindrefl", "morten", "andreas","Sindrefl", "morten"};
 
-    public void renderYourTurns(String[] games){
+    public void renderLists(String[] games){
         for(String players : games){
             System.out.println(players);
             yourTurnGames.add(players);
@@ -73,6 +84,27 @@ public class MainMenuActivity extends Activity {
         ArrayAdapter arrayAdapter = new ArrayAdapter(this, R.layout.list_cosmetics ,R.id.list_text_cosmetics, yourTurnGames);
         ListView yourTurnListView = (ListView) findViewById(R.id.yourTurnList);
         yourTurnListView.setAdapter(arrayAdapter);
+        Utility.setDynamicHeight(yourTurnListView);
         yourTurnListView.setEnabled(true);
+
+        ArrayAdapter invitesAdapter = new ArrayAdapter(this, R.layout.list_cosmetics, R.id.list_text_cosmetics, yourTurnGames);
+        ListView invitesList = (ListView) findViewById(R.id.yourInvites);
+        invitesList.setAdapter(invitesAdapter);
+        Utility.setDynamicHeight(invitesList);
+        invitesList.setEnabled(true);
+
+        ArrayAdapter theirTurnAdapter = new ArrayAdapter(this, R.layout.list_cosmetics, R.id.list_text_cosmetics, yourTurnGames);
+        ListView theirTurnList = (ListView) findViewById(R.id.theirTurnList);
+        theirTurnList.setAdapter(theirTurnAdapter);
+        Utility.setDynamicHeight(theirTurnList);
+        theirTurnList.setEnabled(true);
+
+        ArrayAdapter pendingAdapter = new ArrayAdapter(this, R.layout.list_cosmetics, R.id.list_text_cosmetics, yourTurnGames);
+        ListView pendingList = (ListView) findViewById(R.id.pendingList);
+        pendingList.setAdapter(pendingAdapter);
+        Utility.setDynamicHeight(pendingList);
+        pendingList.setEnabled(true);
+
+
     }
 }

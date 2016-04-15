@@ -7,48 +7,116 @@
     android:paddingTop="@dimen/activity_vertical_margin" tools:context=".mainMenu.MainMenuActivity"
     android:background="#000000"
     style="@style/AppTheme.NoActionBar">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/topLayout">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textColor="#ffffff"
+            android:textSize="30sp"
+            android:gravity="center_horizontal"
+            android:fontFamily="monospace"/>
 
-        <LinearLayout android:id="@+id/main_menu" android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:orientation="vertical">
+        <Button
+            android:id="@+id/new_game"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/new_game"
+            android:textColor="#ffffff"
+            android:background="#3a3a3a"
+            style="@android:style/Holo.ButtonBar"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:padding="15dp"/>
+    </LinearLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
             <TextView
+                android:id="@+id/invitesText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/app_name"
-                android:textColor="#ffffff"
-                android:textSize="30sp"
-                android:gravity="center_horizontal"
-                android:fontFamily="monospace"/>
+                android:text="@string/invites"
+                android:textColor="#3a3a3a"
+                android:textSize="20sp"
+                android:layout_alignParentTop="true"
+                />
 
-            <Button
-                android:id="@+id/new_game"
+            <ListView
+                android:id="@+id/yourInvites"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/new_game"
-                android:textColor="#ffffff"
-                android:background="#3a3a3a"
-                style="@android:style/Holo.ButtonBar"
                 android:layout_marginTop="16dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp" />
+                android:layout_below="@id/invitesText">
+            </ListView>
 
             <TextView
+                android:id="@+id/yourTurnText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/your_turn"
                 android:textColor="#3a3a3a"
                 android:textSize="20sp"
-                android:backgroundTint="@color/wallet_bright_foreground_holo_light"/>
+                android:layout_below="@id/yourInvites"/>
 
             <ListView
                 android:id="@+id/yourTurnList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp">
+                android:layout_marginTop="16dp"
+                android:layout_below="@id/yourTurnText">
             </ListView>
 
-        </LinearLayout>
+            <TextView
+                android:id="@+id/theirTurnText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/their_turn"
+                android:textColor="#3a3a3a"
+                android:textSize="20sp"
+                android:layout_below="@+id/yourTurnList"/>
 
+            <ListView
+                android:id="@+id/theirTurnList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_below="@id/theirTurnText"/>
 
+            <TextView
+                android:id="@+id/pendingText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/pending"
+                android:textColor="#3a3a3a"
+                android:textSize="20sp"
+                android:layout_below="@id/theirTurnList"/>
+
+            <ListView
+                android:id="@+id/pendingList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_below="@id/pendingText"/>
+            <Button
+                android:id="@+id/signOut_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/sign_out"
+                android:padding="16dp"
+                android:background="#3a3a3a"
+                android:textColor="#ffffff"
+                android:layout_below="@id/pendingList"/>
+        </RelativeLayout>
+    </ScrollView>
 </LinearLayout>
