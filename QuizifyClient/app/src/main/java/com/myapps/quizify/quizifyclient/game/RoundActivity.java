@@ -139,10 +139,15 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
     private void chooseAlternative(int i) {
         if (correctAlternative.equals(alternatives.get(i))) score += bar.getProgress();
         timer.cancel();
+        moveOn();
+
+
+
+
+    }
+    private void moveOn(){
+        //TODO Better flow implementation
         mMediaPlayer.stop();
-
-
-        //TODO: Better flow implementation
         Intent intent = null;
         if(++currentRound == 5){
             intent = new Intent(RoundActivity.this, CategoryActivity.class);
@@ -152,14 +157,6 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
             intent.putExtra("score", score);
             intent.putExtra("round", currentRound);
         }
-        finish();
-        startActivity(intent);
-    }
-    private void noChosenAlternative(){
-        //TODO Better flow implementation
-        Intent intent = new Intent(RoundActivity.this, RoundActivity.class);
-        intent.putExtra("score", score);
-        intent.putExtra("round", currentRound + 1);
         finish();
         startActivity(intent);
     }
@@ -191,7 +188,7 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
             public void onFinish() {
                 bar.setProgress(0);
                 mMediaPlayer.stop();
-                noChosenAlternative();
+                moveOn();
             }
         }.start();
 
@@ -200,6 +197,7 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
     @Override
     public void finish() {
         mMediaPlayer.stop();
+        timer.cancel();
         super.finish();
     }
 }
