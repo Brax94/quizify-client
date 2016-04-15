@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.myapps.quizify.quizifyclient.R;
@@ -45,16 +46,18 @@ import java.util.TimerTask;
 public class RoundActivity extends Activity implements MediaPlayer.OnPreparedListener{
 
 
-    private List scores;
+    private int score;
     private List alternatives = Arrays.asList(new String[]{"Alternative 1", "Alternative 2", "Alternative 3", "Alternative 4"});
     private String songURL = "https://p.scdn.co/mp3-preview/04fac4f932a798c9dc0eb03e1df2c78081becb6e";
 
     private String correctAlternative = "Alternative 3";
-    private int roundNumber;
 
     private MediaPlayer mMediaPlayer;
 
     private RequestQueue mQueue;
+
+    private ProgressBar bar;
+    private CountDownTimer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,11 +65,14 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
 
         //initAlternatives();
         initScores();
-        roundNumber = scores.size();
+
 
 
         mQueue = RequestHandler.getInstance(this.getApplicationContext()).getRequestQueue();
         setContentView(R.layout.activity_round);
+
+        Button disp = (Button) findViewById(R.id.displayButton);
+        disp.setText((CharSequence) Integer.toString(score));
 
         Button btn = (Button) findViewById(R.id.alternative);
         btn.setText((CharSequence) alternatives.get(0));
@@ -124,13 +130,16 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
     }
 
     private void chooseAlternative(int i) {
-        if (correctAlternative.equals(alternatives.get(i))) scores.add(1);
-        else scores.add(0);
+        if (correctAlternative.equals(alternatives.get(i))) score += bar.getProgress();
+        timer.cancel();
+        mMediaPlayer.stop();
+    }
+    private void noChosenAlternative(){
         this.recreate();
     }
 
     private void initScores() {
-        scores = getIntent().getIntegerArrayListExtra("scores");
+        score = getIntent().getIntExtra("score", -1);
     }
 
     private void initAlternatives(){
@@ -148,15 +157,21 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
     @Override
     public void onPrepared(MediaPlayer mp) {
         mMediaPlayer.start();
+        bar = (ProgressBar) findViewById(R.id.timer);
+
         //Timer
-        CountDownTimer timer = new CountDownTimer(15000, 1000) {
+        timer = new CountDownTimer(15000, 10) {
+            @Override
             public void onTick(long millisUntilFinished) {
-                ((TextView) findViewById(R.id.timerWindow)).setText("seconds remaining: " + millisUntilFinished / 1000);
+                bar.setProgress((int) millisUntilFinished );
             }
 
             public void onFinish() {
+                bar.setProgress(0);
                 mMediaPlayer.stop();
+                noChosenAlternative();
             }
         }.start();
+
     }
 }

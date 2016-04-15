@@ -5,16 +5,42 @@
 
     android:orientation="vertical"
     >
-
-    <TextView android:id="@+id/timerWindow"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        />
+        android:layout_weight="1"
+        android:gravity="bottom"
+        >
+        <Button android:id="@+id/displayButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="bottom"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        >
+
+        <ProgressBar android:id="@+id/timer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:max="15000"
+            android:progress="0"
+            />
 
     <Button android:id="@+id/alternative"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        />
     <Button android:id="@+id/alternative1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -25,4 +51,5 @@
     <Button android:id="@+id/alternative3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+    </LinearLayout>
 </LinearLayout>

@@ -15,10 +15,12 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.myapps.quizify.quizifyclient.R;
 import com.myapps.quizify.quizifyclient.util.RequestHandler;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -32,7 +34,7 @@ public class CategoryActivity extends Activity implements Response.ErrorListener
     private List categories = Arrays.asList(new String[]{"Send request1", "Send request2", "TO ROUND", "Something else", "Anything but Justin Bieber", "Hello world"});
 
     private RequestQueue mQueue;
-    private static String url = "http://localhost:8000/categories/?format=json";
+    private static String url = "http://kane.royrvik.org:8000/categories/";
     private static String dummy = "http://echo.jsontest.com/title/ipsum/content/blah";
     private static String dummy2 = "http://echo.jsontest.com/key/value/one/two";
 
@@ -54,16 +56,17 @@ public class CategoryActivity extends Activity implements Response.ErrorListener
         btn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                final JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, dummy,
-                        new JSONObject(), new Response.Listener<JSONObject>(){
+                final JsonArrayRequest jsonRequest = new JsonArrayRequest(Request.Method.GET, url,
+                        new JSONArray(), new Response.Listener<JSONArray>(){
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(JSONArray response) {
                         String text = "";
                         try {
-                            text = response.getString("content");
+                            text = response.getJSONObject(0).getString("name");
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+
                         btn.setText(text);
                     }
                 }, RequestHandler.getInstance(CategoryActivity.this.getApplicationContext()));
@@ -92,7 +95,7 @@ public class CategoryActivity extends Activity implements Response.ErrorListener
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(CategoryActivity.this, RoundActivity.class);
-                i.putExtra("scores", new ArrayList<Integer>());
+                i.putExtra("score", 0);
                 startActivity(i);
             }
         });
@@ -137,6 +140,6 @@ public class CategoryActivity extends Activity implements Response.ErrorListener
 
     @Override
     public void onErrorResponse(VolleyError error) {
-        //WHAT TODO?
+        error.printStackTrace();
     }
 }

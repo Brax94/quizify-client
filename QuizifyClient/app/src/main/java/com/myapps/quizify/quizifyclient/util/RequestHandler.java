@@ -47,6 +47,6 @@ public class RequestHandler implements Response.ErrorListener{
 
     @Override
     public void onErrorResponse(VolleyError error) {
-        //Todo: implement error handling
+        error.printStackTrace();
     }
 }
