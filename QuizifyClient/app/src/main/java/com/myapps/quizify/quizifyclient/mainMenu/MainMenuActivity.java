@@ -1,7 +1,14 @@
 package com.myapps.quizify.quizifyclient.mainMenu;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.myapps.quizify.quizifyclient.game.CategoryActivity;
 import com.myapps.quizify.quizifyclient.logIn.QuizifyLogin;
+import com.myapps.quizify.quizifyclient.util.RequestHandler;
 import com.myapps.quizify.quizifyclient.util.SystemUiHider;
 
 import android.annotation.TargetApi;
@@ -32,14 +39,18 @@ import java.util.ArrayList;
  */
 public class MainMenuActivity extends Activity {
 
-    final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+    SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //Checks if logged in - TODO: Create some sort of session for login + autologin?
+        mQueue = RequestHandler.getInstance(this.getApplicationContext())
+                .getRequestQueue();
 
+        //Checks if logged in - TODO: Create some sort of session for login + autologin?
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        this.prefs = prefs;
         boolean isLogin = prefs.getBoolean("isLogin", false); // get value of last login status
 
         if(!isLogin){
@@ -69,43 +80,43 @@ public class MainMenuActivity extends Activity {
                 prefs.edit().putBoolean("isLogin", false).commit();
             }
         });
-        renderLists(urturn);
 
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+        try {
+            jsonRequest();
+            System.out.println("Trying Request");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            System.out.println("Request Failed 1.");
+        }
+        renderLists();
     }
 
-    ArrayList<String> yourTurnGames = new ArrayList<>();
-    String[] urturn = {"Sindrefl", "morten", "andreas","Sindrefl", "morten"};
+    //ArrayList<String> yourTurnGames = new ArrayList<>();
+    //String[] urturn = {"Sindrefl", "morten", "andreas","Sindrefl", "morten"};
 
-    public void renderLists(String[] games){
-        for(String players : games){
-            System.out.println(players);
-            yourTurnGames.add(players);
-        }
-        ArrayAdapter arrayAdapter = new ArrayAdapter(this, R.layout.list_cosmetics ,R.id.list_text_cosmetics, yourTurnGames);
+    public void renderLists(){
+        CustomRelativeAdapter yourTurnAdapter = new CustomRelativeAdapter(MainMenuActivity.this, yourTurn, "Play");
         ListView yourTurnListView = (ListView) findViewById(R.id.yourTurnList);
-        yourTurnListView.setAdapter(arrayAdapter);
+        yourTurnListView.setAdapter(yourTurnAdapter);
         Utility.setDynamicHeight(yourTurnListView);
         yourTurnListView.setEnabled(true);
 
-        ArrayAdapter invitesAdapter = new ArrayAdapter(this, R.layout.list_cosmetics, R.id.list_text_cosmetics, yourTurnGames);
-        ListView invitesList = (ListView) findViewById(R.id.yourInvites);
+        CustomRelativeAdapter invitesAdapter = new CustomRelativeAdapter(MainMenuActivity.this, invites, "Play");        ListView invitesList = (ListView) findViewById(R.id.yourInvites);
         invitesList.setAdapter(invitesAdapter);
         Utility.setDynamicHeight(invitesList);
         invitesList.setEnabled(true);
 
-        ArrayAdapter theirTurnAdapter = new ArrayAdapter(this, R.layout.list_cosmetics, R.id.list_text_cosmetics, yourTurnGames);
-        ListView theirTurnList = (ListView) findViewById(R.id.theirTurnList);
+        CustomRelativeAdapter theirTurnAdapter = new CustomRelativeAdapter(MainMenuActivity.this, theirTurn, "Play");        ListView theirTurnList = (ListView) findViewById(R.id.theirTurnList);
         theirTurnList.setAdapter(theirTurnAdapter);
         Utility.setDynamicHeight(theirTurnList);
         theirTurnList.setEnabled(true);
 
-        ArrayAdapter pendingAdapter = new ArrayAdapter(this, R.layout.list_cosmetics, R.id.list_text_cosmetics, yourTurnGames);
-        ListView pendingList = (ListView) findViewById(R.id.pendingList);
+        CustomRelativeAdapter pendingAdapter = new CustomRelativeAdapter(MainMenuActivity.this, pending, "Play");        ListView pendingList = (ListView) findViewById(R.id.pendingList);
         pendingList.setAdapter(pendingAdapter);
         Utility.setDynamicHeight(pendingList);
         pendingList.setEnabled(true);
@@ -121,7 +132,7 @@ public class MainMenuActivity extends Activity {
 
     //TODO:Make sure this method always corresponds with json file from server!
 
-    public void sortJasonRequest(JSONArray games) throws JSONException {
+    public void sortJsonRequest(JSONArray games) throws JSONException {
         for(int i = 0; i < games.length(); i++){
             JSONObject game = games.getJSONObject(i);
             if(game.getString("invitation_status").equals("accepted")){
@@ -142,5 +153,28 @@ public class MainMenuActivity extends Activity {
                 }
             }
         }
+        System.out.println("Their Turn: "+theirTurn.toString());
+    }
+    //TODO: This method is for testing, can be improved - use best practise!
+    private static String url = "http://kane.royrvik.org:8000/games/";
+    private RequestQueue mQueue;
+    public void jsonRequest() throws JSONException{
+        System.out.println("RequestMethod is running");
+        final JsonArrayRequest jsonRequest = new JsonArrayRequest(Request.Method.GET, url,
+                new JSONArray(), new Response.Listener<JSONArray>(){
+            @Override
+            public void onResponse(JSONArray response) {
+                System.out.println("Got Response: " + response.toString());
+                try {
+                    System.out.println("sorting");
+                    sortJsonRequest(response);
+                    renderLists();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, RequestHandler.getInstance(MainMenuActivity.this.getApplicationContext()));
+        System.out.println(jsonRequest.toString());
+        this.mQueue.add(jsonRequest);
     }
 }
