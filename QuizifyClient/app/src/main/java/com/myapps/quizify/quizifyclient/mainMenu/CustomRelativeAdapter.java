@@ -66,7 +66,7 @@ public class CustomRelativeAdapter extends BaseAdapter{
         // TODO Auto-generated method stub
         Holder holder=new Holder();
         View rowView;
-        rowView = inflater.inflate(R.layout.custom_relative_adapter, null);
+        rowView = inflater.inflate(R.layout.custom_relative_adapter, parent, false);
         holder.username = (TextView) rowView.findViewById(R.id.username);
         try {
             holder.username.setText(result.get(position).getJSONObject("player2").getString("username"));

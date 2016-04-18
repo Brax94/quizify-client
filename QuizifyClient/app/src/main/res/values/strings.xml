@@ -20,4 +20,7 @@
     <string name="sign_out">Sign Out</string>
     <string name="invites">Your Invites</string>
 
+    <!--New Game String Collection-->
+    <string name="inviteFriend">Invite Friend</string>
+
 </resources>

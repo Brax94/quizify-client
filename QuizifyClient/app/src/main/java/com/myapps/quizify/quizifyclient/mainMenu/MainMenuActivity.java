@@ -111,12 +111,12 @@ public class MainMenuActivity extends Activity {
         Utility.setDynamicHeight(invitesList);
         invitesList.setEnabled(true);
 
-        CustomRelativeAdapter theirTurnAdapter = new CustomRelativeAdapter(MainMenuActivity.this, theirTurn, "Play");        ListView theirTurnList = (ListView) findViewById(R.id.theirTurnList);
+        CustomRelativeAdapter theirTurnAdapter = new CustomRelativeAdapter(MainMenuActivity.this, theirTurn, "Their Turn");        ListView theirTurnList = (ListView) findViewById(R.id.theirTurnList);
         theirTurnList.setAdapter(theirTurnAdapter);
         Utility.setDynamicHeight(theirTurnList);
         theirTurnList.setEnabled(true);
 
-        CustomRelativeAdapter pendingAdapter = new CustomRelativeAdapter(MainMenuActivity.this, pending, "Play");        ListView pendingList = (ListView) findViewById(R.id.pendingList);
+        CustomRelativeAdapter pendingAdapter = new CustomRelativeAdapter(MainMenuActivity.this, pending, "Pending");        ListView pendingList = (ListView) findViewById(R.id.pendingList);
         pendingList.setAdapter(pendingAdapter);
         Utility.setDynamicHeight(pendingList);
         pendingList.setEnabled(true);
