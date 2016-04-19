@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -20,7 +21,10 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.myapps.quizify.quizifyclient.R;
 import com.myapps.quizify.quizifyclient.mainMenu.MainMenuActivity;
+import com.myapps.quizify.quizifyclient.net.quizifyapp.net.APIObjectResponseListener;
+import com.myapps.quizify.quizifyclient.net.quizifyapp.net.NetworkManager;
 import com.myapps.quizify.quizifyclient.util.RequestHandler;
+import com.myapps.quizify.quizifyclient.util.SystemUiHider;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,24 +33,19 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 public class CategoryActivity extends Activity implements Response.ErrorListener{
 
     //Todo: implement via server
     private List<String> categories = Arrays.asList(new String[]{"Test for server: reply wonderwaste", "Cat2", "TO ROUND", "Something else", "Anything but Justin Bieber", "Hello world"});
 
-    private RequestQueue mQueue;
-    private static String url = "http://kane.royrvik.org:8000/categories/";
-    private static String dummy = "http://echo.jsontest.com/title/ipsum/content/blah";
-    private static String dummy2 = "http://echo.jsontest.com/key/value/one/two";
-
+    List correctAlternatives;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        mQueue = RequestHandler.getInstance(this.getApplicationContext())
-                .getRequestQueue();
 
         initCategories();
 
@@ -60,23 +59,29 @@ public class CategoryActivity extends Activity implements Response.ErrorListener
         btn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                final JsonArrayRequest jsonRequest = new JsonArrayRequest(Request.Method.GET, url,
-                        new JSONArray(), new Response.Listener<JSONArray>(){
+                NetworkManager manager = NetworkManager.getInstance(getApplicationContext());
+                manager.getCateogries(new APIObjectResponseListener<String, JSONArray>() {
                     @Override
-                    public void onResponse(JSONArray response) {
-                        String text = "";
-                        try {
-                            text = response.getJSONObject(0).getString("name");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                    public void getResult(String error, JSONArray result) {
+                        if(error != null){
+                            System.err.print(error);
+                            return;
                         }
-
-                        btn.setText(text);
+                        /*
+                        Random rand = new Random();
+                        for(int i =0; i < 6; i++){
+                            int n = rand.nextInt(result.length() - i);
+                            try {
+                                categories.set(i, ((JSONObject) result.get(n)).getString("name"));
+                            }catch (JSONException e){e.printStackTrace();};
+                        }
+                        */
+                        categories.set(5, result.get())
                     }
-                }, RequestHandler.getInstance(CategoryActivity.this.getApplicationContext()));
-                mQueue.add(jsonRequest);
-            }
-        });
+                });
+            };
+    });
+
 
         final Button btn1 =(Button) findViewById(R.id.btn2);
         btn1.setText((CharSequence) categories.get(1));
@@ -133,17 +138,11 @@ public class CategoryActivity extends Activity implements Response.ErrorListener
 
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
     private void initCategories(){
         //TODO get categories from server
     }
 
     private void chooseCategory(int category){
-
         String chosen = categories.get(category);
 
         Intent i = null;
@@ -161,20 +160,6 @@ public class CategoryActivity extends Activity implements Response.ErrorListener
         }
         finish();
         startActivity(i);
-
-        /*
-        final JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, url,
-                new JSONObject(), new Response.Listener<JSONObject>(){
-            @Override
-            public void onResponse(JSONObject response) {
-                Intent i = new Intent(CategoryActivity.this, RoundActivity.class);
-                i.putExtra("JSON", response.toString());
-                i.putExtra("scores", new ArrayList<Integer>());
-                startActivity(i);
-            }
-        }, CategoryActivity.this);
-        mQueue.add(jsonRequest);
-*/
     }
 
     @Override

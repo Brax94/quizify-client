@@ -26,10 +26,8 @@ import java.util.List;
 public class RoundActivity extends Activity implements MediaPlayer.OnPreparedListener{
 
 
-    private List alternatives;
     private GameObserver mObserver;
     private MediaPlayer mMediaPlayer;
-    private RequestQueue mQueue;
 
     private ProgressBar bar;
     private CountDownTimer timer;
@@ -38,12 +36,12 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mObserver = GameObserver.getInstance(getIntent().getStringExtra("Category"));
+        int gameId = 1;
 
+        mObserver = GameObserver.getInstance(getApplicationContext(), 1);
 
-        alternatives = mObserver.getAlternatives();
+        List<String> alternatives = mObserver.getAlternatives();
 
-        mQueue = RequestHandler.getInstance(this.getApplicationContext()).getRequestQueue();
         setContentView(R.layout.activity_round);
 
         Button disp = (Button) findViewById(R.id.displayButton);
@@ -106,7 +104,6 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
 
         }
         mMediaPlayer.prepareAsync();
-
     }
 
     private void chooseAlternative(int i) {
@@ -117,16 +114,13 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
     private void moveOn(int i){
         //TODO Better flow implementation
         mMediaPlayer.stop();
-        Intent intent = null;
         if(mObserver.nextRound(i)){
-            intent = new Intent(RoundActivity.this, CategoryActivity.class);
+            Intent intent = new Intent(RoundActivity.this, CategoryActivity.class);
             intent.putExtra("previous", "RoundActivity");
+            startActivity(intent);
         }else{
-            intent = new Intent(RoundActivity.this, RoundActivity.class);
-            intent.putExtra("Category", getIntent().getStringExtra("Category"));
+            recreate();
         }
-        finish();
-        startActivity(intent);
     }
 
     @Override
@@ -148,6 +142,11 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
             }
         }.start();
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        //Stops the application from returning while in game
     }
 
     @Override

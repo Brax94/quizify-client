@@ -8,9 +8,11 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -27,6 +29,8 @@ public class NetworkManager {
     private static final String grantType = "password";
 
     private static String authKey = null;
+
+
 
     //for Volley API
     public RequestQueue requestQueue;
@@ -183,18 +187,14 @@ public class NetworkManager {
         requestQueue.add(request);
     }
 
-    public void getCateogries(final APIObjectResponseListener<String, Map<String, Object>> listener) {
+    public void getCateogries(final APIObjectResponseListener<String, JSONArray> listener) {
         String url = prefixURL + "/categories/";
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, new JSONObject(),
-                new Response.Listener<JSONObject>() {
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, new JSONArray(),
+                new Response.Listener<JSONArray>() {
                     @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            listener.getResult(null, Utils.jsonToMap(response));
-                        } catch (JSONException e) {
-                            listener.getResult("Server responded with invalid data", null);
-                        }
+                    public void onResponse(JSONArray response) {
+                            listener.getResult(null, response);
                     }
                 },
                 new Response.ErrorListener() {
@@ -202,6 +202,7 @@ public class NetworkManager {
                     public void onErrorResponse(VolleyError error) {
                         Log.d(TAG + ": ", "Error Response code: " + error.getMessage());
                         listener.getResult(error.getMessage(), null);
+                        error.printStackTrace();
                     }
                 }) {
             @Override
