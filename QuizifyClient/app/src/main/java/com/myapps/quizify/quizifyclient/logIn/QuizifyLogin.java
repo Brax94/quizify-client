@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -27,9 +28,13 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.myapps.quizify.quizifyclient.R;
 import com.myapps.quizify.quizifyclient.mainMenu.MainMenuActivity;
+import com.myapps.quizify.quizifyclient.net.quizifyapp.net.APIAuthenticationResponseListener;
+import com.myapps.quizify.quizifyclient.net.quizifyapp.net.NetworkManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -154,7 +159,7 @@ public class QuizifyLogin extends Activity implements LoaderCallbacks<Cursor> {
 
     private boolean isEmailValid(String email) {
         //TODO: Replace this with your own logic
-        return email.contains("@");
+        return true;
     }
 
     private boolean isPasswordValid(String password) {
@@ -269,24 +274,41 @@ public class QuizifyLogin extends Activity implements LoaderCallbacks<Cursor> {
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
+            NetworkManager.getInstance(getApplicationContext()).login(mEmail, mPassword, new APIAuthenticationResponseListener<String>() {
 
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
+                @Override
+                public void getResult(String error) {
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(QuizifyLogin.this);
+                    Log.d("ELIAS", "Got response, testing prefs: " + prefs.contains("isAuth"));
+                    if(error != null){
+                        Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
+                        Log.d("ELIAS", "Got error");
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
+                        prefs.edit().putBoolean("isAuth", false).commit();
+                        return;
+                    }
+                    prefs.edit().putBoolean("isAuth", true).commit();
+
                 }
-            }
+            });
 
-            // TODO: register the new account here.
-            return true;
+            boolean checking = false;
+            boolean success = false;
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(QuizifyLogin.this);
+
+            while(!checking){
+                if(prefs.contains("isAuth")){
+                    boolean temp = prefs.getBoolean("isAuth", false);
+                    Log.d("ELIAS", "inneholder auth: " + temp);
+                    if(temp){
+                        success = true;
+                    }
+                    prefs.edit().clear();
+                    checking = true;
+                }
+
+            }
+            return success;
         }
 
         @Override
