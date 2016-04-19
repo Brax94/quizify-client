@@ -1,60 +1,58 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:background="#0099cc"
-    tools:context="com.myapps.quizify.quizifyclient.logIn.RegistrerAccount">
+    android:layout_height="match_parent" android:background="#000000"
+    tools:context="com.myapps.quizify.quizifyclient.logIn.RegistrerAccount"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:orientation="vertical">
 
-    <!-- The primary full-screen view. This can be replaced with whatever view
-         is needed to present your content, e.g. VideoView, SurfaceView,
-         TextureView, etc. -->
-
-    <LinearLayout android:id="@+id/fullscreen_content"
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:textColor="#ffffff"
+        android:textSize="30sp"
+        android:gravity="center_horizontal"
+        android:fontFamily="monospace"
+        android:layout_marginBottom="16dp" />
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="username"
-            android:textColorHint="@color/black_overlay"
-            android:id="@+id/usernameField"
-            android:layout_gravity="center" />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Email"
+        android:inputType="textEmailAddress"
+        android:id="@+id/email_register_field"
+        android:layout_gravity="center"
+        android:textColor="#ffffff"
+        android:textColorHint="#3a3a3a"/>
 
-        <EditText
-            android:layout_width="189dp"
-            android:layout_height="wrap_content"
-            android:inputType="textPassword"
-            android:ems="10"
-            android:hint="password"
-            android:id="@+id/passwordField"
-            android:layout_gravity="center" />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Username"
+        android:id="@+id/usernameField"
+        android:layout_gravity="center"
+        android:textColor="#ffffff"
+        android:textColorHint="#3a3a3a"/>
 
-
-    </LinearLayout>
-
-    <!-- This FrameLayout insets its children based on system windows using
-         android:fitsSystemWindows. -->
-    <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
-
-        <LinearLayout android:id="@+id/fullscreen_content_controls" style="?metaButtonBarStyle"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:background="@color/black_overlay" android:orientation="horizontal"
-            tools:ignore="UselessParent">
-
-            <Button android:id="@+id/Register" style="?metaButtonBarButtonStyle"
-                android:layout_width="0dp" android:layout_height="wrap_content"
-                android:layout_weight="1" android:text="Register Account" />
-            <Button android:id="@+id/Return" style="?metaButtonBarButtonStyle"
-                android:layout_width="0dp" android:layout_height="wrap_content"
-                android:layout_weight="1" android:text="Return" />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:hint="Password"
+        android:id="@+id/passwordField"
+        android:layout_gravity="center"
+        android:textColor="#ffffff"
+        android:textColorHint="#3a3a3a"/>
+    <Button
+        android:id="@+id/registerButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Register"
+        android:textColor="#ffffff"/>
 
 
-        </LinearLayout>
+</LinearLayout>
 
-    </FrameLayout>
 
-</FrameLayout>
