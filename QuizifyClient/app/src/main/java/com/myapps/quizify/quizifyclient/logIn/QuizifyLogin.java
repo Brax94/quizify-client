@@ -265,6 +265,8 @@ public class QuizifyLogin extends Activity implements LoaderCallbacks<Cursor> {
 
         private final String mEmail;
         private final String mPassword;
+        private boolean isAuth;
+        private boolean serverAuth = true;
 
         UserLoginTask(String email, String password) {
             mEmail = email;
@@ -278,37 +280,21 @@ public class QuizifyLogin extends Activity implements LoaderCallbacks<Cursor> {
 
                 @Override
                 public void getResult(String error) {
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(QuizifyLogin.this);
-                    Log.d("ELIAS", "Got response, testing prefs: " + prefs.contains("isAuth"));
-                    if(error != null){
+                    if (error != null) {
+                        Log.d("ELIAS", "ERROR");
                         Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
-                        Log.d("ELIAS", "Got error");
-
-                        prefs.edit().putBoolean("isAuth", false).commit();
+                        isAuth = false;
+                        serverAuth = false;
                         return;
                     }
-                    prefs.edit().putBoolean("isAuth", true).commit();
-
+                    Log.d("ELIAS", "SUCCESS");
+                    isAuth = true;
+                    serverAuth = false;
                 }
             });
-
-            boolean checking = false;
-            boolean success = false;
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(QuizifyLogin.this);
-
-            while(!checking){
-                if(prefs.contains("isAuth")){
-                    boolean temp = prefs.getBoolean("isAuth", false);
-                    Log.d("ELIAS", "inneholder auth: " + temp);
-                    if(temp){
-                        success = true;
-                    }
-                    prefs.edit().clear();
-                    checking = true;
-                }
-
+            while(serverAuth){
             }
-            return success;
+            return isAuth;
         }
 
         @Override

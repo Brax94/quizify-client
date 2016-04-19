@@ -78,7 +78,7 @@ public class NetworkManager {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.d(TAG + ": ", "Register error response code: " + error.networkResponse.statusCode);
-                        listener.getResult(error.getMessage());
+                        listener.getResult("Something went wrong, email may be registerd, password may be to weak, or username may be taken");
                     }
                 });
 
@@ -100,6 +100,7 @@ public class NetworkManager {
                         Log.d(TAG + ": ", "Login Response : " + response.toString());
                         try {
                             authKey = response.getString("token");
+                            Log.d("ELIAS", authKey);
                             listener.getResult(null);
                         } catch (JSONException e) {
                             listener.getResult("Token not returned");
@@ -110,7 +111,7 @@ public class NetworkManager {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.d(TAG + ": ", "Login error response code: " + error.networkResponse.statusCode);
-                        listener.getResult(error.getMessage());
+                        listener.getResult("Something went wrong");
                     }
                 });
 
