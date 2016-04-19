@@ -8,6 +8,8 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.myapps.quizify.quizifyclient.game.CategoryActivity;
 import com.myapps.quizify.quizifyclient.logIn.QuizifyLogin;
+import com.myapps.quizify.quizifyclient.net.quizifyapp.net.APIObjectResponseListener;
+import com.myapps.quizify.quizifyclient.net.quizifyapp.net.NetworkManager;
 import com.myapps.quizify.quizifyclient.util.RequestHandler;
 import com.myapps.quizify.quizifyclient.util.SystemUiHider;
 
@@ -20,6 +22,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -34,6 +37,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  */
@@ -45,22 +49,17 @@ public class MainMenuActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mQueue = RequestHandler.getInstance(this.getApplicationContext())
-                .getRequestQueue();
-
         //Checks if logged in - TODO: Create some sort of session for login + autologin?
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        this.prefs = prefs;
-        boolean isLogin = prefs.getBoolean("isLogin", false); // get value of last login status
 
-        if(!isLogin){
+        if(!NetworkManager.getInstance(getApplicationContext()).existsValidToken()){
             Intent logInIntent = new Intent(this, QuizifyLogin.class);
             startActivity(logInIntent);
+            NetworkManager.getInstance().destroy();
+            finish();
         }
-        //Makes you log in every time - TODO: REMOVE WHEN DONE TESTING
-        //prefs.edit().putBoolean("isLogin", false).commit();
 
         setContentView(R.layout.activity_main_menu);
+        prefs = PreferenceManager.getDefaultSharedPreferences(MainMenuActivity.this);
 
         Button new_game = (Button) findViewById(R.id.new_game);
         new_game.setOnClickListener(new View.OnClickListener() {
@@ -77,7 +76,9 @@ public class MainMenuActivity extends Activity {
             public void onClick(View v) {
                 Intent signOut = new Intent(MainMenuActivity.this, QuizifyLogin.class);
                 startActivity(signOut);
-                prefs.edit().putBoolean("isLogin", false).commit();
+                NetworkManager.getInstance().destroy();
+                prefs.edit().clear();
+                finish();
             }
         });
 
@@ -86,13 +87,8 @@ public class MainMenuActivity extends Activity {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        try {
-            jsonRequest();
-            System.out.println("Trying Request");
-        } catch (JSONException e) {
-            e.printStackTrace();
-            System.out.println("Request Failed 1.");
-        }
+        getGames();
+        Log.d("ELIAS", "Trying Request");
         renderLists();
     }
 
@@ -145,6 +141,7 @@ public class MainMenuActivity extends Activity {
                 }
             }
             else{
+                Log.d("ELIAS", prefs.getString("username", "#noValidUsername"));
                 if(game.getJSONObject("player1").getString("username").equals(prefs.getString("username", "#noValidUsername"))){
                     pending.add(game);
                 }
@@ -155,26 +152,20 @@ public class MainMenuActivity extends Activity {
         }
         System.out.println("Their Turn: "+theirTurn.toString());
     }
-    //TODO: This method is for testing, can be improved - use best practise!
-    private static String url = "http://kane.royrvik.org:8000/games/";
-    private RequestQueue mQueue;
-    public void jsonRequest() throws JSONException{
-        System.out.println("RequestMethod is running");
-        final JsonArrayRequest jsonRequest = new JsonArrayRequest(Request.Method.GET, url,
-                new JSONArray(), new Response.Listener<JSONArray>(){
+    //Get games method
+
+    public void getGames(){
+        NetworkManager.getInstance(getApplicationContext()).getGames(new APIObjectResponseListener<String, JSONArray>() {
             @Override
-            public void onResponse(JSONArray response) {
-                System.out.println("Got Response: " + response.toString());
+            public void getResult(String error, JSONArray result) {
                 try {
-                    System.out.println("sorting");
-                    sortJsonRequest(response);
-                    renderLists();
+                    Log.d("ELIAS", result.toString());
+                    sortJsonRequest(result);
                 } catch (JSONException e) {
+                    //TODO: Show user some error or do something drastic!
                     e.printStackTrace();
                 }
             }
-        }, RequestHandler.getInstance(MainMenuActivity.this.getApplicationContext()));
-        System.out.println(jsonRequest.toString());
-        this.mQueue.add(jsonRequest);
+        });
     }
 }
