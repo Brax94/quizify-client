@@ -36,6 +36,7 @@ public class CustomRelativeAdapter extends BaseAdapter{
 
     @Override
     public int getCount() {
+
         return result.size();
     }
 
@@ -77,7 +78,7 @@ public class CustomRelativeAdapter extends BaseAdapter{
         //TODO: Fix score as soon as it is contained within json
         //Score holder dummy:
         Random rand = new Random();
-        String dummy = rand.nextInt(6) + "" + rand.nextInt(6);
+        String dummy = rand.nextInt(6) + " : " + rand.nextInt(6);
         holder.score.setText(dummy);
 
         holder.functionTag = (TextView)  rowView.findViewById(R.id.functionTag);

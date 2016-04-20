@@ -19,6 +19,7 @@ public class Utility {
         int height = 0;
         int desiredWidth = View.MeasureSpec.makeMeasureSpec(mListView.getWidth(), View.MeasureSpec.UNSPECIFIED);
         for (int i = 0; i < mListAdapter.getCount(); i++) {
+
             View listItem = mListAdapter.getView(i, null, mListView);
             listItem.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
             height += listItem.getMeasuredHeight();

@@ -1,31 +1,17 @@
 package com.myapps.quizify.quizifyclient.mainMenu;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.myapps.quizify.quizifyclient.game.CategoryActivity;
+
 import com.myapps.quizify.quizifyclient.logIn.QuizifyLogin;
 import com.myapps.quizify.quizifyclient.net.quizifyapp.net.APIObjectResponseListener;
 import com.myapps.quizify.quizifyclient.net.quizifyapp.net.NetworkManager;
-import com.myapps.quizify.quizifyclient.util.RequestHandler;
-import com.myapps.quizify.quizifyclient.util.SystemUiHider;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
@@ -37,7 +23,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 /**
  */
@@ -89,7 +74,6 @@ public class MainMenuActivity extends Activity {
         super.onPostCreate(savedInstanceState);
         getGames();
         Log.d("ELIAS", "Trying Request");
-        renderLists();
     }
 
     //ArrayList<String> yourTurnGames = new ArrayList<>();
@@ -133,15 +117,16 @@ public class MainMenuActivity extends Activity {
             JSONObject game = games.getJSONObject(i);
             if(game.getString("invitation_status").equals("accepted")){
                 JSONArray array = game.getJSONArray("rounds");
+                if(array.length() != 0){
                 if(array.getJSONObject(array.length()-1).getJSONObject("whos_turn").getString("username").equals(prefs.getString("username", "#noValidUsername"))){
                     yourTurn.add(game);
                 }
                 else {
                     theirTurn.add(game);
-                }
+                }}
+                pending.add(game);
             }
             else{
-                Log.d("ELIAS", prefs.getString("username", "#noValidUsername"));
                 if(game.getJSONObject("player1").getString("username").equals(prefs.getString("username", "#noValidUsername"))){
                     pending.add(game);
                 }
@@ -151,6 +136,7 @@ public class MainMenuActivity extends Activity {
             }
         }
         System.out.println("Their Turn: "+theirTurn.toString());
+        renderLists();
     }
     //Get games method
 
@@ -159,7 +145,7 @@ public class MainMenuActivity extends Activity {
             @Override
             public void getResult(String error, JSONArray result) {
                 try {
-                    Log.d("ELIAS", result.toString());
+                    Log.d("ELIAS", "RESULT FROM SERVER: " + result.toString());
                     sortJsonRequest(result);
                 } catch (JSONException e) {
                     //TODO: Show user some error or do something drastic!
