@@ -1,6 +1,8 @@
 package com.myapps.quizify.quizifyclient.mainMenu;
 
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.myapps.quizify.quizifyclient.R;
+import com.myapps.quizify.quizifyclient.game.CategoryActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,11 +26,13 @@ public class CustomRelativeAdapter extends BaseAdapter{
     ArrayList<JSONObject> result;
     Context context;
     String functionTag;
+    boolean playable;
     private static LayoutInflater inflater = null;
 
-    public CustomRelativeAdapter(MainMenuActivity activity, ArrayList<JSONObject> jsonArray, String functionTag){
+    public CustomRelativeAdapter(MainMenuActivity activity, ArrayList<JSONObject> jsonArray, String functionTag, boolean playable){
         result = jsonArray;
         context = activity;
+        this.playable = playable;
         this.functionTag = functionTag;
 
         inflater = (LayoutInflater)context.
@@ -63,7 +68,7 @@ public class CustomRelativeAdapter extends BaseAdapter{
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         // TODO Auto-generated method stub
         Holder holder=new Holder();
         View rowView;
@@ -85,14 +90,23 @@ public class CustomRelativeAdapter extends BaseAdapter{
         holder.functionTag.setText(functionTag);
 
 
+        if(playable) {
+            holder.functionTag.setEnabled(true);
+            holder.functionTag.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(context, CategoryActivity.class);
+                    try {
+                        i.putExtra("game_id", result.get(position).getInt("id"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Log.d("ELIAS_ERROR", "SOMETHING WENT VERY WRONG WITH FINDING ID");
+                    }
+                    context.startActivity(i);
 
-        rowView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-
-            }
-        });
+                }
+            });
+        }
         return rowView;
     }
 }

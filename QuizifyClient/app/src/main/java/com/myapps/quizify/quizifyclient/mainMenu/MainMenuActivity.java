@@ -80,26 +80,26 @@ public class MainMenuActivity extends Activity {
     //String[] urturn = {"Sindrefl", "morten", "andreas","Sindrefl", "morten"};
 
     public void renderLists(){
-        CustomRelativeAdapter yourTurnAdapter = new CustomRelativeAdapter(MainMenuActivity.this, yourTurn, "Play");
+        CustomRelativeAdapter yourTurnAdapter = new CustomRelativeAdapter(MainMenuActivity.this, yourTurn, "Play", true);
         ListView yourTurnListView = (ListView) findViewById(R.id.yourTurnList);
         yourTurnListView.setAdapter(yourTurnAdapter);
         Utility.setDynamicHeight(yourTurnListView);
-        yourTurnListView.setEnabled(true);
+        yourTurnListView.setEnabled(false);
 
-        CustomRelativeAdapter invitesAdapter = new CustomRelativeAdapter(MainMenuActivity.this, invites, "Play");        ListView invitesList = (ListView) findViewById(R.id.yourInvites);
+        CustomRelativeAdapter invitesAdapter = new CustomRelativeAdapter(MainMenuActivity.this, invites, "Play", true);        ListView invitesList = (ListView) findViewById(R.id.yourInvites);
         invitesList.setAdapter(invitesAdapter);
         Utility.setDynamicHeight(invitesList);
-        invitesList.setEnabled(true);
+        invitesList.setEnabled(false);
 
-        CustomRelativeAdapter theirTurnAdapter = new CustomRelativeAdapter(MainMenuActivity.this, theirTurn, "Their Turn");        ListView theirTurnList = (ListView) findViewById(R.id.theirTurnList);
+        CustomRelativeAdapter theirTurnAdapter = new CustomRelativeAdapter(MainMenuActivity.this, theirTurn, "Their Turn", false);        ListView theirTurnList = (ListView) findViewById(R.id.theirTurnList);
         theirTurnList.setAdapter(theirTurnAdapter);
         Utility.setDynamicHeight(theirTurnList);
-        theirTurnList.setEnabled(true);
+        theirTurnList.setEnabled(false);
 
-        CustomRelativeAdapter pendingAdapter = new CustomRelativeAdapter(MainMenuActivity.this, pending, "Pending");        ListView pendingList = (ListView) findViewById(R.id.pendingList);
+        CustomRelativeAdapter pendingAdapter = new CustomRelativeAdapter(MainMenuActivity.this, pending, "Pending", false);        ListView pendingList = (ListView) findViewById(R.id.pendingList);
         pendingList.setAdapter(pendingAdapter);
         Utility.setDynamicHeight(pendingList);
-        pendingList.setEnabled(true);
+        pendingList.setEnabled(false);
 
 
     }

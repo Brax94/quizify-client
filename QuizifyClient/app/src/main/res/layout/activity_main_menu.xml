@@ -116,7 +116,8 @@
                 android:padding="16dp"
                 android:background="#3a3a3a"
                 android:textColor="#ffffff"
-                android:layout_below="@id/pendingList"/>
+                android:layout_below="@id/pendingList"
+                android:layout_marginTop="32dp"/>
         </RelativeLayout>
     </ScrollView>
 </LinearLayout>
