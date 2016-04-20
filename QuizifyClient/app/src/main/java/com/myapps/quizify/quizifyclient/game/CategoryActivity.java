@@ -20,6 +20,8 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.myapps.quizify.quizifyclient.R;
 import com.myapps.quizify.quizifyclient.mainMenu.MainMenuActivity;
+import com.myapps.quizify.quizifyclient.net.quizifyapp.net.APIObjectResponseListener;
+import com.myapps.quizify.quizifyclient.net.quizifyapp.net.NetworkManager;
 import com.myapps.quizify.quizifyclient.util.RequestHandler;
 
 import org.json.JSONArray;
@@ -30,121 +32,81 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class CategoryActivity extends Activity implements Response.ErrorListener{
+public class CategoryActivity extends Activity {
 
-    //Todo: implement via server
     private List<String> categories = Arrays.asList(new String[]{"Test for server: reply wonderwaste", "Cat2", "TO ROUND", "Something else", "Anything but Justin Bieber", "Hello world"});
 
-    private RequestQueue mQueue;
-    private static String url = "http://kane.royrvik.org:8000/categories/";
-    private static String dummy = "http://echo.jsontest.com/title/ipsum/content/blah";
-    private static String dummy2 = "http://echo.jsontest.com/key/value/one/two";
+    private List<Button> buttons;
 
+    private static int[] ids = new int[]{R.id.btn1,R.id.btn2,R.id.btn3,R.id.btn4,R.id.btn5,R.id.btn6};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mQueue = RequestHandler.getInstance(this.getApplicationContext())
-                .getRequestQueue();
-
+        buttons = new ArrayList<>();
         initCategories();
 
         setContentView(R.layout.activity_category);
-
-
-
-        final Button btn =(Button) findViewById(R.id.btn1);
-        btn.setText((CharSequence) categories.get(0));
-
-        btn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                final JsonArrayRequest jsonRequest = new JsonArrayRequest(Request.Method.GET, url,
-                        new JSONArray(), new Response.Listener<JSONArray>(){
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        String text = "";
-                        try {
-                            text = response.getJSONObject(0).getString("name");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                        btn.setText(text);
-                    }
-                }, RequestHandler.getInstance(CategoryActivity.this.getApplicationContext()));
-                mQueue.add(jsonRequest);
-            }
-        });
-
-        final Button btn1 =(Button) findViewById(R.id.btn2);
-        btn1.setText((CharSequence) categories.get(1));
-
-
-        btn1.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                chooseCategory(1);
-            }
-        });
-
-
-        Button btn2 =(Button) findViewById(R.id.btn3);
-        btn2.setText((CharSequence) categories.get(2));
-
-        btn2.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                chooseCategory(2);
-            }
-        });
-
-
-        Button btn3 =(Button) findViewById(R.id.btn4);
-        btn3.setText((CharSequence) categories.get(3));
-
-        btn3.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                chooseCategory(3);
-            }
-        });
-
-        Button btn4 =(Button) findViewById(R.id.btn5);
-        btn4.setText((CharSequence) categories.get(4));
-
-        btn4.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                chooseCategory(4);
-            }
-        });
-
-        Button btn5 =(Button) findViewById(R.id.btn6);
-        btn5.setText((CharSequence) categories.get(5));
-
-        btn5.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                chooseCategory(5);
-            }
-        });
-
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
     }
 
     private void initCategories(){
-        //TODO get categories from server
+        NetworkManager.getInstance(getApplicationContext()).getCategories(new APIObjectResponseListener<String, JSONArray>() {
+            @Override
+            public void getResult(String error, JSONArray result) {
+                if (error != null){
+                    System.err.print(error);
+                    return;
+                }
+                try{
+                    String[] s = new String[6];
+                    for (int i = 0; i < s.length; i++){
+                        s[i] = ((JSONObject) result.get(0)).getString("name");
+                    }
+
+                    for (int j = 0; j < ids.length; j++){
+                        Button button = (Button) findViewById(ids[j]);
+                        button.setText((CharSequence) s[j]);
+                        buttons.add(button);
+                    }
+                    buttons.get(0).setOnClickListener(new View.OnClickListener(){
+                        @Override
+                        public void onClick(View v) {chooseCategory(0);}
+                    });
+                    buttons.get(1).setOnClickListener(new View.OnClickListener(){
+                        @Override
+                        public void onClick(View v) {chooseCategory(1);}
+                    });
+                    buttons.get(2).setOnClickListener(new View.OnClickListener(){
+                        @Override
+                        public void onClick(View v) {chooseCategory(2);}
+                    });
+                    buttons.get(3).setOnClickListener(new View.OnClickListener(){
+                        @Override
+                        public void onClick(View v) {chooseCategory(3);}
+                    });
+                    buttons.get(4).setOnClickListener(new View.OnClickListener(){
+                        @Override
+                        public void onClick(View v) {chooseCategory(4);}
+                    });
+                    buttons.get(5).setOnClickListener(new View.OnClickListener(){
+                        @Override
+                        public void onClick(View v) {chooseCategory(5);}
+                    });
+
+                }catch(JSONException e){
+                    e.printStackTrace();
+                }
+
+            }
+        });
     }
 
     private void chooseCategory(int category){
 
         String chosen = categories.get(category);
+
+
 
         Intent i = null;
         //TODO: find better implementation of flow?
@@ -162,23 +124,5 @@ public class CategoryActivity extends Activity implements Response.ErrorListener
         finish();
         startActivity(i);
 
-        /*
-        final JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, url,
-                new JSONObject(), new Response.Listener<JSONObject>(){
-            @Override
-            public void onResponse(JSONObject response) {
-                Intent i = new Intent(CategoryActivity.this, RoundActivity.class);
-                i.putExtra("JSON", response.toString());
-                i.putExtra("scores", new ArrayList<Integer>());
-                startActivity(i);
-            }
-        }, CategoryActivity.this);
-        mQueue.add(jsonRequest);
-*/
-    }
-
-    @Override
-    public void onErrorResponse(VolleyError error) {
-        error.printStackTrace();
     }
 }

@@ -38,7 +38,7 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mObserver = GameObserver.getInstance(getIntent().getStringExtra("Category"));
+        mObserver = GameObserver.getInstance(1, getApplicationContext());
 
 
         alternatives = mObserver.getAlternatives();
@@ -92,6 +92,12 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
         });
 
 
+
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
         //play song from data resource
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setOnPreparedListener(this);
@@ -115,18 +121,16 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
         else moveOn(0);
     }
     private void moveOn(int i){
-        //TODO Better flow implementation
         mMediaPlayer.stop();
-        Intent intent = null;
+
         if(mObserver.nextRound(i)){
-            intent = new Intent(RoundActivity.this, CategoryActivity.class);
+            Intent intent = new Intent(RoundActivity.this, CategoryActivity.class);
             intent.putExtra("previous", "RoundActivity");
+            startActivity(intent);
         }else{
-            intent = new Intent(RoundActivity.this, RoundActivity.class);
-            intent.putExtra("Category", getIntent().getStringExtra("Category"));
+            recreate();
         }
-        finish();
-        startActivity(intent);
+
     }
 
     @Override
