@@ -159,5 +159,6 @@
     <orderEntry type="library" exported="" name="play-services-fitness-8.4.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-panorama-8.4.0" level="project" />
     <orderEntry type="module" module-name="volley" exported="" />
+    <orderEntry type="module" module-name="gson-2.2.2" exported="" />
   </component>
 </module>

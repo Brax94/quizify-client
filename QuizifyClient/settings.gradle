@@ -1,2 +1,2 @@
-include ':app'
+include ':app', ':gson-2.2.2'
 include ':volley'
