@@ -27,6 +27,7 @@ public class NewGame extends AppCompatActivity {
     EditText mInviteView;
     View mInvFormView;
     View mProgressView;
+    View mSuccessView;
     Intent sucessIntent;
 
     @Override
@@ -37,6 +38,7 @@ public class NewGame extends AppCompatActivity {
         mInviteView = (EditText) findViewById(R.id.inviteUsername);
         mInvFormView = findViewById(R.id.inv_form);
         mProgressView = findViewById(R.id.inv_process);
+        mSuccessView = findViewById(R.id.Confirmation_form_inv);
 
         sucessIntent = new Intent(this, MainMenuActivity.class);
 
@@ -63,6 +65,15 @@ public class NewGame extends AppCompatActivity {
                                 return;
                             } else {
                                 Log.d("ELIAS_NMCHECK", "Result: " + result.toString());
+                                showProgress(false);
+                                showSuccess(true);
+                                try {
+                                    //Flashes success screen, or should, at least!
+                                    Thread.sleep(1200);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                showSuccess(false);
                                 startActivity(sucessIntent);
                                 finish();
                             }
@@ -115,6 +126,10 @@ public class NewGame extends AppCompatActivity {
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mInvFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
+    }
+    public void showSuccess(boolean show){
+        mInvFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+        mSuccessView.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
 }
