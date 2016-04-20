@@ -14,7 +14,9 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
 import com.myapps.quizify.quizifyclient.R;
@@ -43,6 +45,8 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
     private String player;
     private String category;
 
+    private int roundNumber;
+
     private int score;
 
     private List<String> songUrls;
@@ -59,6 +63,9 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
     private Button btn3;
     private Button disp;
     private Button disp2;
+    private TextView p1;
+    private TextView p2;
+
 
     private View mProgressView;
     private View mRoundView;
@@ -74,6 +81,9 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
         //initRound(getIntent().getIntExtra("game_id", -1));
 
         setContentView(R.layout.activity_round);
+
+        p1 = (TextView) findViewById(R.id.round_player1);
+        p2 = (TextView) findViewById(R.id.round_player2);
 
         disp = (Button) findViewById(R.id.displayButton);
         disp2 = (Button) findViewById(R.id.displayButton2);
@@ -210,6 +220,8 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
                 }
                 try {
                     parseJson(result);
+                    p1.setText(player);
+                    p2.setText(opponent);
                     askQuestion();
                 } catch (JSONException e) {
                     e.printStackTrace();
