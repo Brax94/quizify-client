@@ -197,7 +197,7 @@ public class NetworkManager {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        listener.getResult(error.getMessage(), null);
+                        listener.getResult(error.getMessage() + " , THIS IS AN ERROR", null);
                     }
                 }) {
             @Override
