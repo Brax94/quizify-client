@@ -1,10 +1,15 @@
 package com.myapps.quizify.quizifyclient.game;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
@@ -25,50 +30,52 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 
 public class RoundActivity extends Activity implements MediaPlayer.OnPreparedListener{
 
+    private static final int NUMBER_OF_QUESTIONS = 5;
+
     private String opponent;
     private String player;
-
     private String category;
 
-    public static int NUMBER_OF_QUESTIONS = 5;
     private int score;
+
     private List<String> songUrls;
     private List<List<String>> alternatives;
     private List<String> correctAlternatives;
 
     private int currentQuestion;
-
-    private String getSongURL(){return songUrls.get(currentQuestion);}
-    private List<String> getAlternatives(){return alternatives.get(currentQuestion);}
-
-    private boolean checkAlternative(int alternative){return alternatives.get(currentQuestion).get(alternative).equals(correctAlternatives.get(currentQuestion));}
-
     private MediaPlayer mMediaPlayer;
-
     private ProgressBar bar;
     private CountDownTimer timer;
+    private Button btn;
+    private Button btn1;
+    private Button btn2;
+    private Button btn3;
+    private Button disp;
+    private Button disp2;
 
-    Button btn;
-    Button btn1;
-    Button btn2;
-    Button btn3;
-    Button disp;
-    Button disp2;
+    private View mProgressView;
+    private View mRoundView;
+
+
+    private String currentSongURL(){return songUrls.get(currentQuestion);}
+    private List<String> currentAlternatives(){return alternatives.get(currentQuestion);}
+    private boolean checkAlternative(int alternative){return alternatives.get(currentQuestion).get(alternative).equals(correctAlternatives.get(currentQuestion));}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initRound(1);
+        //initRound(getIntent().getIntExtra("game_id", -1));
 
         setContentView(R.layout.activity_round);
 
         disp = (Button) findViewById(R.id.displayButton);
-
         disp2 = (Button) findViewById(R.id.displayButton2);
 
         btn = (Button) findViewById(R.id.alternative);
@@ -102,6 +109,10 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
                 chooseAlternative(3);
             }
         });
+
+        mProgressView = findViewById(R.id.round_process);
+        mRoundView = findViewById(R.id.round_form);
+        initRound(1);
     }
 
     private void chooseAlternative(int i) {
@@ -125,13 +136,13 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
     }
 
     private void updateButtonText(){
-        List<String> alternatives = getAlternatives();
+        List<String> alternatives = currentAlternatives();
         btn.setText((CharSequence) alternatives.get(0));
         btn1.setText((CharSequence) alternatives.get(1));
         btn2.setText((CharSequence) alternatives.get(2));
         btn3.setText((CharSequence) alternatives.get(3));
         disp.setText((CharSequence) "Score: " + Integer.toString(score));
-        disp2.setText((CharSequence) "Round: " + Integer.toString(currentQuestion));
+        disp2.setText((CharSequence) "Round: " + Integer.toString(currentQuestion + 1));
 
     }
 
@@ -163,7 +174,7 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
         mMediaPlayer.setOnPreparedListener(this);
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try{
-            mMediaPlayer.setDataSource(getSongURL());
+            mMediaPlayer.setDataSource(currentSongURL());
         }catch (IllegalArgumentException e){
             e.printStackTrace();
 
@@ -181,8 +192,6 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
         timer.cancel();
         super.finish();
     }
-
-
 
     //IO:
     private void initRound(int id){
@@ -207,36 +216,159 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
                 }
             }
         });
+        /*
+        showProgress(true);
+        RenderPageTask mRenderTask = new RenderPageTask(id);
+        mRenderTask.execute((Void) null);
+        */
     }
+
+    private static final String[] buttonChoices = new String[]{"name", "artist"};
+    private static final Random RANDOM = new Random();
+    private String randomButtonChoice(){return buttonChoices[RANDOM.nextInt(buttonChoices.length)];}
 
     private void parseJson(JSONObject array) throws JSONException{
         player = array.getJSONObject("player1").getString("username");
         opponent = array.getJSONObject("player2").getString("username");
         JSONArray rounds = array.getJSONArray("rounds");
-        JSONObject roundsObject = rounds.getJSONObject(rounds.length() - 1);
-        JSONArray questions = roundsObject.getJSONArray("questions");
-        //TODO More questions on server questions.length()
-        for(int i = 0; i < questions.length(); i++){
-            correctAlternatives.add(((JSONObject)questions.get(i)).getJSONObject("correct_answer").getString("name"));
-            songUrls.add(((JSONObject)questions.get(i)).getJSONObject("correct_answer").getString("url"));
-            JSONArray alternatives = ((JSONObject)questions.get(i)).getJSONArray("alternatives");
-            List<String> innerList = new ArrayList<>();
-            for (int j = 0; j < 3; j++){
-                //TODO RANDOMLY GET ALTERNATIVES
-                innerList.add(((JSONObject)alternatives.get(j)).getString("name"));
-            }
-            innerList.add(((JSONObject)questions.get(i)).getJSONObject("correct_answer").getString("name"));
-            this.alternatives.add(innerList);
-            System.out.println("Length of json:" + alternatives.length());
-        }
+        JSONArray questions = rounds.getJSONObject(rounds.length() - 1).getJSONArray("questions");
 
-        System.out.println("SINDRE: sanger: " + songUrls);
-        System.out.println("Sindre: correctalt: " + correctAlternatives);
-        System.out.println("Sindre: alternativ1: " + alternatives.get(0));
-        System.out.println("Lengde: " + alternatives.get(0).size());
+        for(int i = 0; i < NUMBER_OF_QUESTIONS; i++){
+            String choice = randomButtonChoice();
+            JSONObject question = (JSONObject) questions.get(i);
+            songUrls.add(question.getJSONObject("correct_answer").getString("url"));
+            correctAlternatives.add(question.getJSONObject("correct_answer").getString(choice));
+
+            JSONArray alternatives = question.getJSONArray("alternatives");
+            List<String> innerList = new ArrayList<>();
+            for (int j = 0; j < 3; j++){innerList.add(((JSONObject)alternatives.get(j)).getString(choice));}
+            innerList.add(question.getJSONObject("correct_answer").getString(choice));
+            Collections.shuffle(innerList);
+            this.alternatives.add(innerList);
+        }
     }
 
     private void sendScore(){
 
     }
+
+    public class RenderPageTask extends AsyncTask<Void, Void, Boolean> {
+
+        private boolean serverAuth = true;
+        private int id;
+
+        public RenderPageTask(int id) {
+
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            NetworkManager.getInstance(getApplicationContext()).getSingleGame(id, new APIObjectResponseListener<String, JSONObject>() {
+                @Override
+                public void getResult(String error, JSONObject result) {
+                    if(error != null){
+                        System.err.print(error);
+                        return;
+                    }
+                    try {
+                        parseJson(result);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            while(serverAuth){}
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            showProgress(false);
+
+            if (success) {
+
+                disp = (Button) findViewById(R.id.displayButton);
+                disp2 = (Button) findViewById(R.id.displayButton2);
+
+                btn = (Button) findViewById(R.id.alternative);
+                btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        chooseAlternative(0);
+                    }
+                });
+
+                btn1 = (Button) findViewById(R.id.alternative1);
+                btn1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        chooseAlternative(1);
+                    }
+                });
+
+                btn2 = (Button) findViewById(R.id.alternative2);
+                btn2.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        chooseAlternative(2);
+                    }
+                });
+
+                btn3 = (Button) findViewById(R.id.alternative3);
+                btn3.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        chooseAlternative(3);
+                    }
+                });
+
+                askQuestion();
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            showProgress(false);
+        }
+    }
+
+
+    /**
+     * Shows the progress UI and hides the login form.
+     */
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    public void showProgress(final boolean show) {
+        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
+        // for very easy animations. If available, use these APIs to fade-in
+        // the progress spinner.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+            mRoundView.setVisibility(show ? View.GONE : View.VISIBLE);
+            mRoundView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mRoundView.setVisibility(show ? View.GONE : View.VISIBLE);
+                }
+            });
+
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mProgressView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
+        } else {
+            // The ViewPropertyAnimator APIs are not available, so simply show
+            // and hide the relevant UI components.
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mRoundView.setVisibility(show ? View.GONE : View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {}
 }
