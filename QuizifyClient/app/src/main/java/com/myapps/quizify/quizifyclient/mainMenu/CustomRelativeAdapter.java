@@ -98,6 +98,7 @@ public class CustomRelativeAdapter extends BaseAdapter{
                     Intent i = new Intent(context, CategoryActivity.class);
                     try {
                         i.putExtra("game_id", result.get(position).getInt("id"));
+                        i.putExtra("game_type", functionTag);
                     } catch (JSONException e) {
                         e.printStackTrace();
                         Log.d("ELIAS_ERROR", "SOMETHING WENT VERY WRONG WITH FINDING ID");

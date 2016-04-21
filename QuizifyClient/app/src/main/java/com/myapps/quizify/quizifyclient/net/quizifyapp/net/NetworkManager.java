@@ -24,8 +24,8 @@ public class NetworkManager {
     private static NetworkManager instance = null;
 
     private static final String prefixURL = "http://kane.royrvik.org:8000";
-    private static final String clientID = "VoquKbj42SBvq9bpfcSsFIbnUOcsihQ2roHL0js9";
-    private static final String clientSecret = "P8WnEHBUpFRDR09jFnCzZ2wHQvDF8B5JyFHagTM27gjFHaGIhinT3sPCC0DpfGgvlZlge1nNWUUSh0rX16MimCbil1yAkrSGe2RB2mc7jEKnQe2QrW7UcoUMVbqtAIvy";
+    private static final String clientID = "j4i6D27fFN59K9ZVKtXdy4Z3GoXYe7PjwR82uZiO";
+    private static final String clientSecret = "ErceOadGt89TlCjV1JtsFs8Z6wSurqfCjDfiIut6e2SGA5YGhLxO8pkwve2VvwVme2NRzVoAnTZAtEToySrIeLcYWPbK2cT6zaydOE29oIvTmNWVAPsHQIzae1B3jWEh";
     private static final String grantType = "password";
 
     private static String authKey = null;
@@ -135,7 +135,7 @@ public class NetworkManager {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.d(TAG + ": ", "Error Response code: " + error.getMessage());
-                        listener.getResult(error.getMessage(), null);
+                        listener.getResult(error.getMessage() + " :This is an error", null);
                     }
                 }) {
             @Override
@@ -164,7 +164,7 @@ public class NetworkManager {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.d(TAG + ": ", "Error Response code: " + error.getMessage());
-                        listener.getResult(error.getMessage(), null);
+                        listener.getResult(error.getMessage() + " :This is an error code", null);
                     }
                 }) {
             @Override

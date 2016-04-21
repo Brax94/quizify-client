@@ -86,7 +86,7 @@ public class MainMenuActivity extends Activity {
         Utility.setDynamicHeight(yourTurnListView);
         yourTurnListView.setEnabled(false);
 
-        CustomRelativeAdapter invitesAdapter = new CustomRelativeAdapter(MainMenuActivity.this, invites, "Play", true);        ListView invitesList = (ListView) findViewById(R.id.yourInvites);
+        CustomRelativeAdapter invitesAdapter = new CustomRelativeAdapter(MainMenuActivity.this, invites, "Accept", true);        ListView invitesList = (ListView) findViewById(R.id.yourInvites);
         invitesList.setAdapter(invitesAdapter);
         Utility.setDynamicHeight(invitesList);
         invitesList.setEnabled(false);
@@ -144,6 +144,10 @@ public class MainMenuActivity extends Activity {
         NetworkManager.getInstance(getApplicationContext()).getGames(new APIObjectResponseListener<String, JSONArray>() {
             @Override
             public void getResult(String error, JSONArray result) {
+                if(error != null) {
+                    Log.d("ELIAS_GETGAME_ERROR", error);
+                    return;
+                }
                 try {
                     Log.d("ELIAS", "RESULT FROM SERVER: " + result.toString());
                     sortJsonRequest(result);
@@ -151,7 +155,7 @@ public class MainMenuActivity extends Activity {
                     //TODO: Show user some error or do something drastic!
                     e.printStackTrace();
                 }
-            }
+                }
         });
     }
 }

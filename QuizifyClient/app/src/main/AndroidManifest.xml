@@ -37,7 +37,7 @@
             android:name=".game.RoundActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_round"
-            android:theme="@style/FullscreenTheme" />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".game.CategoryActivity"
             android:label="@string/title_activity_category"
