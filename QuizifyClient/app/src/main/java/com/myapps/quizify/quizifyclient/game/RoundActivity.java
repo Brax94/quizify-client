@@ -68,6 +68,10 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
     private TextView p1;
     private TextView p2;
 
+    private int gameId;
+    private int roundId;
+    private int categoryId;
+
 
     private View mProgressView;
     private View mRoundView;
@@ -82,10 +86,12 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
         super.onCreate(savedInstanceState);
 
 
-        System.out.println("HEI IGJEN HER ER GAME ID FRA ROUND" + getIntent().getIntExtra("game_id", -1));
+        gameId = getIntent().getIntExtra("game_id", -1);
+
+        System.out.println("HEI IGJEN HER ER GAME ID FRA ROUND" + gameId);
 
 
-        if(getIntent().getIntExtra("game_id", -1) == -1){
+        if(gameId == -1){
             Intent i = new Intent(RoundActivity.this, MainMenuActivity.class);
             finish();
             startActivity(i);
@@ -94,7 +100,7 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
             Intent i = new Intent(RoundActivity.this, MainMenuActivity.class);
             finish();
             startActivity(i);
-        }
+            }
         }
 
         setContentView(R.layout.activity_round);
@@ -141,7 +147,7 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
         mRoundView = findViewById(R.id.round_form);
 
         //initRound(1);
-        initRound(getIntent().getIntExtra("game_id", -1));
+        initRound();
     }
 
     private void chooseAlternative(int i) {
@@ -156,12 +162,8 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
 
         if(++currentQuestion == NUMBER_OF_QUESTIONS){
             sendScore(score);
-            Intent intent = new Intent(RoundActivity.this, CategoryActivity.class);
-            intent.putExtra("previous", "RoundActivity");
-            startActivity(intent);
         }
         else{askQuestion();}
-
     }
 
     private void updateButtonText(){
@@ -223,7 +225,7 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
     }
 
     //IO:
-    private void initRound(int id){
+    private void initRound(){
         correctAlternatives = new ArrayList<>();
         songUrls = new ArrayList<>();
         alternatives = new ArrayList<>();
@@ -231,7 +233,7 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
         this.currentQuestion = 0;
 
         if(getIntent().hasExtra("category_id")) {
-            NetworkManager.getInstance(getApplicationContext()).newRound(id, getIntent().getIntExtra("category_id", -1), new APIObjectResponseListener<String, JSONObject>() {
+            NetworkManager.getInstance(getApplicationContext()).newRound(gameId, getIntent().getIntExtra("category_id", -1), new APIObjectResponseListener<String, JSONObject>() {
                 @Override
                 public void getResult(String error, JSONObject result) {
                     if (error != null) {
@@ -250,7 +252,7 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
             });
         }
         else{
-                NetworkManager.getInstance(getApplicationContext()).getSingleGame(id, new APIObjectResponseListener<String, JSONObject>() {
+                NetworkManager.getInstance(getApplicationContext()).getSingleGame(gameId, new APIObjectResponseListener<String, JSONObject>() {
                     @Override
                     public void getResult(String error, JSONObject result) {
                         if (error != null) {
@@ -280,9 +282,16 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
     private String randomButtonChoice(){return buttonChoices[RANDOM.nextInt(buttonChoices.length)];}
 
     private void parseJson(JSONObject array) throws JSONException{
+        JSONArray rounds = array.getJSONArray("rounds");
+        String cPlayer = rounds.getJSONObject(rounds.length()-1).getJSONObject("whos_turn").getString("username");
+        roundId = rounds.getJSONObject(rounds.length()-1).getInt("id");
         player = array.getJSONObject("player1").getString("username");
         opponent = array.getJSONObject("player2").getString("username");
-        JSONArray rounds = array.getJSONArray("rounds");
+        if(!player.equals(cPlayer)){
+            opponent = player;
+            player = cPlayer;
+        }
+
         JSONArray questions = rounds.getJSONObject(rounds.length() - 1).getJSONArray("questions");
 
         for(int i = 0; i < NUMBER_OF_QUESTIONS; i++){
@@ -302,28 +311,33 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
         System.out.println("URLS: " + songUrls);
         System.out.println("Correctalts: " + correctAlternatives);
         System.out.println("Alternatives: " + alternatives);
-        System.out.println("Player1: " + player);
-        System.out.println("Player2: " + opponent);
+        System.out.println("HEY THERE P1: " + player);
+        System.out.println("HEY THERE P2: " + opponent);
 
     }
 
     private void sendScore(int score){
-        NetworkManager.getInstance(getApplicationContext()).saveRound(getIntent().getIntExtra("game_id", -1), score, new APIObjectResponseListener<String, JSONObject>() {
+        NetworkManager.getInstance(getApplicationContext()).saveRound(roundId, score, new APIObjectResponseListener<String, JSONObject>() {
             @Override
             public void getResult(String error, JSONObject result) {
                 if (error != null) {
+                    System.out.println("HELLO HANDSOME: " + error);
                     System.err.print(error);
                     return;
                 }
                 try {
-                    System.out.println(result.toString());
                     String res = result.getString("status");
+
+                    System.out.println("HEY IM HERE" + res);
+
                     if (res.equals("active")){
-                        Intent i = new Intent(RoundActivity.this, CategoryActivity.class);
-                        i.putExtra("game_id", getIntent().getIntExtra("game_id", -1));
+                        Intent i = new Intent(RoundActivity.this,MainMenuActivity.class);
+                        finish();
                         startActivity(i);
                     }else if(res.equals("completed")){
-                        Intent i = new Intent(RoundActivity.this,MainMenuActivity.class);
+                        Intent i = new Intent(RoundActivity.this, CategoryActivity.class);
+                        i.putExtra("game_id", gameId);
+                        finish();
                         startActivity(i);
                     }
                 } catch (JSONException e) {

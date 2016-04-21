@@ -346,7 +346,7 @@ public class NetworkManager {
 
 
     public void saveRound(int gameId, int score, final APIObjectResponseListener<String, JSONObject> listener) {
-        String url = prefixURL + "/rounds/" + gameId;
+        String url = prefixURL + "/rounds/" + gameId + "/";
 
         Map<String, Object> jsonParams = new HashMap<>();
         jsonParams.put("score", score);

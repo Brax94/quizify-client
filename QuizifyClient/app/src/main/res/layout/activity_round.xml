@@ -34,6 +34,7 @@
             android:text="player1"
             android:textSize="20dp"
             android:fontFamily="monospace"
+            android:textColor="#ffffff"
             />
         <ImageView
             android:src="@drawable/vs"
@@ -47,7 +48,8 @@
             android:layout_height="wrap_content"
             android:text="player2"
             android:textSize="20dp"
-            android:fontFamily="monospace"/>
+            android:fontFamily="monospace"
+            android:textColor="#ffffff"/>
 
     </LinearLayout>
 
