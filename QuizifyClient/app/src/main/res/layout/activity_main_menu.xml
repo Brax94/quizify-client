@@ -34,6 +34,18 @@
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:padding="15dp"/>
+        <Button
+            android:id="@+id/refresh"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Refresh"
+            android:textColor="#ffffff"
+            android:background="#04BCE0"
+            style="@android:style/Holo.ButtonBar"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:padding="15dp"/>
     </LinearLayout>
     <ScrollView
         android:layout_width="match_parent"
