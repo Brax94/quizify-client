@@ -124,7 +124,6 @@ public class MainMenuActivity extends Activity {
                 else {
                     theirTurn.add(game);
                 }}
-                pending.add(game);
             }
             else{
                 if(game.getJSONObject("player1").getString("username").equals(prefs.getString("username", "#noValidUsername"))){

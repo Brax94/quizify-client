@@ -305,7 +305,7 @@ public class NetworkManager {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.d(TAG + ": ", "Error Response code: " + error.getMessage());
-                        listener.getResult(error.getMessage() + ": THIS IS AN ERRROR", null);
+                        listener.getResult(error.getMessage() + ": THIS IS AN ERROR", null);
                     }
                 });
 
