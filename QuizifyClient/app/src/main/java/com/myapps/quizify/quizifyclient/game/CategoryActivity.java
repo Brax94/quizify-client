@@ -27,6 +27,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.games.Game;
+import com.google.gson.JsonObject;
 import com.myapps.quizify.quizifyclient.R;
 import com.myapps.quizify.quizifyclient.mainMenu.MainMenuActivity;
 import com.myapps.quizify.quizifyclient.net.quizifyapp.net.APIAuthenticationResponseListener;
@@ -46,6 +47,7 @@ public class CategoryActivity extends Activity {
 
     private List<Button> buttons;
     private String[] categories;
+    private int[] categoryIds;
 
     private static int[] ids = new int[]{R.id.btn1,R.id.btn2,R.id.btn3,R.id.btn4,R.id.btn5,R.id.btn6};
 
@@ -56,10 +58,22 @@ public class CategoryActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
+        if (getIntent().hasExtra("game_type")){
+            if(getIntent().getStringExtra("game_type").equals("Play")){
+                Intent i = new Intent(CategoryActivity.this, RoundActivity.class);
+                i.putExtra("id", getIntent().getIntExtra("id",-1));
+                startActivity(i);
+            }
+        }
+
+
         buttons = new ArrayList<>();
         setContentView(R.layout.activity_category);
         mProgressView = findViewById(R.id.category_process);
         mCategoryView = findViewById(R.id.category_form);
+
+        System.out.println("HEI IGJEN HER ER GAME ID FRA CATEGORY" + getIntent().getIntExtra("game_id", -1));
 
         initCategories();
     }
@@ -71,24 +85,11 @@ public class CategoryActivity extends Activity {
     }
 
     private void chooseCategory(int category){
-
-        Intent i = null;
-        //TODO: find better implementation of flow?
-        if(getIntent().hasExtra("previous")){
-            if(getIntent().getStringExtra("previous").equals("RoundActivity")){
-               //TODO: post result to server
-               i = new Intent(CategoryActivity.this, MainMenuActivity.class);
-            }
-        }else{
-            //TODO: post category choice to server
-            //TODO: get resulting song urls and alternatives
-            i = new Intent(CategoryActivity.this, RoundActivity.class);
-            i.putExtra("Category", buttons.get(category).getText());
-            i.putExtra("game_id", getIntent().getIntExtra("game_id", -1));
-        }
+        Intent i = new Intent(CategoryActivity.this, RoundActivity.class);
+        i.putExtra("category_id", categoryIds[category]);
+        i.putExtra("game_id", getIntent().getIntExtra("game_id", -1));
         finish();
         startActivity(i);
-
     }
 
     public class RenderPageTask extends AsyncTask<Void, Void, Boolean> {
@@ -110,9 +111,11 @@ public class CategoryActivity extends Activity {
                         return;
                     }
                     try{
+                        categoryIds = new int[6];
                         categories = new String[6];
                         for (int i = 0; i < categories.length; i++){
-                            categories[i] = ((JSONObject) result.get(0)).getString("name");
+                            categories[i] = ((JSONObject) result.get(i)).getString("name");
+                            categoryIds[i] = (((JSONObject) result.get(i)).getInt("id"));
                         }
                         serverAuth = false;
                     }catch(JSONException e){

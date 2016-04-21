@@ -113,7 +113,7 @@ public class NetworkManager {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d(TAG + ": ", "Login error response code: " + error.networkResponse.statusCode);
+                        Log.d(TAG + ": ", "Login error response code: " + error.networkResponse.data);
                         listener.getResult("Something went wrong");
                     }
                 });
@@ -312,28 +312,24 @@ public class NetworkManager {
         requestQueue.add(jsObjRequest);
     }
 
-    public void newRound(int gameId, int categoryId, final APIObjectResponseListener<String, Map<String, Object>> listener) {
+    public void newRound(int gameId, int categoryId, final APIObjectResponseListener<String,JSONObject> listener) {
         String url = prefixURL + "/rounds/";
 
         Map<String, Object> jsonParams = new HashMap<>();
         jsonParams.put("game", gameId);
         jsonParams.put("category", categoryId);
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(),
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(jsonParams),
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        try {
-                            listener.getResult(null, Utils.jsonToMap(response));
-                        } catch (JSONException e) {
-                            listener.getResult("Server responded with invalid data", null);
-                        }
+                            listener.getResult(null, response);
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d(TAG + ": ", "Error Response code: " + error.getMessage());
+                        Log.d(TAG + ": ", "Error Response code: " + error.networkResponse.data);
                         listener.getResult(error.getMessage(), null);
                     }
                 }) {
@@ -349,7 +345,7 @@ public class NetworkManager {
     }
 
 
-    public void saveRound(int gameId, int score, final APIObjectResponseListener<String, Map<String, Object>> listener) {
+    public void saveRound(int gameId, int score, final APIObjectResponseListener<String, JSONObject> listener) {
         String url = prefixURL + "/rounds/" + gameId;
 
         Map<String, Object> jsonParams = new HashMap<>();
@@ -359,18 +355,14 @@ public class NetworkManager {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        try {
-                            listener.getResult(null, Utils.jsonToMap(response));
-                        } catch (JSONException e) {
-                            listener.getResult("Server responded with invalid data", null);
-                        }
+                        listener.getResult(null, response);
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d(TAG + ": ", "Error Response code: " + error.getMessage());
-                        listener.getResult(error.getMessage(), null);
+                        Log.d(TAG + ": ", "Error Response code: " + error.networkResponse.data);
+                        listener.getResult(error.getMessage() + "Cool error is error!", null);
                     }
                 }) {
             @Override

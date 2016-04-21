@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
 import com.myapps.quizify.quizifyclient.R;
+import com.myapps.quizify.quizifyclient.mainMenu.MainMenuActivity;
 import com.myapps.quizify.quizifyclient.net.quizifyapp.net.APIObjectResponseListener;
 import com.myapps.quizify.quizifyclient.net.quizifyapp.net.NetworkManager;
 import com.myapps.quizify.quizifyclient.util.RequestHandler;
@@ -34,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 
@@ -78,7 +80,22 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //initRound(getIntent().getIntExtra("game_id", -1));
+
+
+        System.out.println("HEI IGJEN HER ER GAME ID FRA ROUND" + getIntent().getIntExtra("game_id", -1));
+
+
+        if(getIntent().getIntExtra("game_id", -1) == -1){
+            Intent i = new Intent(RoundActivity.this, MainMenuActivity.class);
+            finish();
+            startActivity(i);
+        }
+        if(getIntent().hasExtra("category_id")){if (getIntent().getIntExtra("category_id", -1) == -1){
+            Intent i = new Intent(RoundActivity.this, MainMenuActivity.class);
+            finish();
+            startActivity(i);
+        }
+        }
 
         setContentView(R.layout.activity_round);
 
@@ -122,7 +139,9 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
 
         mProgressView = findViewById(R.id.round_process);
         mRoundView = findViewById(R.id.round_form);
-        initRound(1);
+
+        //initRound(1);
+        initRound(getIntent().getIntExtra("game_id", -1));
     }
 
     private void chooseAlternative(int i) {
@@ -136,7 +155,7 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
         this.score += score;
 
         if(++currentQuestion == NUMBER_OF_QUESTIONS){
-            sendScore();
+            sendScore(score);
             Intent intent = new Intent(RoundActivity.this, CategoryActivity.class);
             intent.putExtra("previous", "RoundActivity");
             startActivity(intent);
@@ -211,23 +230,44 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
         this.score = 0;
         this.currentQuestion = 0;
 
-        NetworkManager.getInstance(getApplicationContext()).getSingleGame(id, new APIObjectResponseListener<String, JSONObject>() {
-            @Override
-            public void getResult(String error, JSONObject result) {
-                if(error != null){
-                    System.err.print(error);
-                    return;
+        if(getIntent().hasExtra("category_id")) {
+            NetworkManager.getInstance(getApplicationContext()).newRound(id, getIntent().getIntExtra("category_id", -1), new APIObjectResponseListener<String, JSONObject>() {
+                @Override
+                public void getResult(String error, JSONObject result) {
+                    if (error != null) {
+                        System.err.print(error);
+                        return;
+                    }
+                    try {
+                        parseJson(result);
+                        p1.setText(player);
+                        p2.setText(opponent);
+                        askQuestion();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
-                try {
-                    parseJson(result);
-                    p1.setText(player);
-                    p2.setText(opponent);
-                    askQuestion();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+            });
+        }
+        else{
+                NetworkManager.getInstance(getApplicationContext()).getSingleGame(id, new APIObjectResponseListener<String, JSONObject>() {
+                    @Override
+                    public void getResult(String error, JSONObject result) {
+                        if (error != null) {
+                            System.err.print(error);
+                            return;
+                        }
+                        try {
+                            parseJson(result);
+                            p1.setText(player);
+                            p2.setText(opponent);
+                            askQuestion();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+           }
         /*
         showProgress(true);
         RenderPageTask mRenderTask = new RenderPageTask(id);
@@ -258,10 +298,39 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
             Collections.shuffle(innerList);
             this.alternatives.add(innerList);
         }
+
+        System.out.println("URLS: " + songUrls);
+        System.out.println("Correctalts: " + correctAlternatives);
+        System.out.println("Alternatives: " + alternatives);
+        System.out.println("Player1: " + player);
+        System.out.println("Player2: " + opponent);
+
     }
 
-    private void sendScore(){
-
+    private void sendScore(int score){
+        NetworkManager.getInstance(getApplicationContext()).saveRound(getIntent().getIntExtra("game_id", -1), score, new APIObjectResponseListener<String, JSONObject>() {
+            @Override
+            public void getResult(String error, JSONObject result) {
+                if (error != null) {
+                    System.err.print(error);
+                    return;
+                }
+                try {
+                    System.out.println(result.toString());
+                    String res = result.getString("status");
+                    if (res.equals("active")){
+                        Intent i = new Intent(RoundActivity.this, CategoryActivity.class);
+                        i.putExtra("game_id", getIntent().getIntExtra("game_id", -1));
+                        startActivity(i);
+                    }else if(res.equals("completed")){
+                        Intent i = new Intent(RoundActivity.this,MainMenuActivity.class);
+                        startActivity(i);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     public class RenderPageTask extends AsyncTask<Void, Void, Boolean> {
