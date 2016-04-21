@@ -312,13 +312,75 @@ public class NetworkManager {
         requestQueue.add(jsObjRequest);
     }
 
-    public void acceptInvite() {
-        // TODO: Create custom URL
-        //          - Should create new round
-        //          - Send notification to player that invited
+    public void newRound(int gameId, int categoryId, final APIObjectResponseListener<String, Map<String, Object>> listener) {
+        String url = prefixURL + "/rounds/";
+
+        Map<String, Object> jsonParams = new HashMap<>();
+        jsonParams.put("game", gameId);
+        jsonParams.put("category", categoryId);
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            listener.getResult(null, Utils.jsonToMap(response));
+                        } catch (JSONException e) {
+                            listener.getResult("Server responded with invalid data", null);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG + ": ", "Error Response code: " + error.getMessage());
+                        listener.getResult(error.getMessage(), null);
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> params =  new HashMap<>();
+                params.put("Authorization", "Bearer " + authKey);
+                return params;
+            }
+        };
+
+        requestQueue.add(request);
     }
 
-    public void saveRound() {
-        // TODO: Create custom POST url in API
+
+    public void saveRound(int gameId, int score, final APIObjectResponseListener<String, Map<String, Object>> listener) {
+        String url = prefixURL + "/rounds/" + gameId;
+
+        Map<String, Object> jsonParams = new HashMap<>();
+        jsonParams.put("score", score);
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, url, new JSONObject(jsonParams),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            listener.getResult(null, Utils.jsonToMap(response));
+                        } catch (JSONException e) {
+                            listener.getResult("Server responded with invalid data", null);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG + ": ", "Error Response code: " + error.getMessage());
+                        listener.getResult(error.getMessage(), null);
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> params =  new HashMap<>();
+                params.put("Authorization", "Bearer " + authKey);
+                return params;
+            }
+        };
+
+        requestQueue.add(request);
     }
 }
