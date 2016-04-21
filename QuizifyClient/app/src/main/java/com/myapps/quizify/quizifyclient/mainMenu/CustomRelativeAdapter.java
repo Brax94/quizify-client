@@ -2,6 +2,8 @@ package com.myapps.quizify.quizifyclient.mainMenu;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,12 +30,14 @@ public class CustomRelativeAdapter extends BaseAdapter{
     String functionTag;
     boolean playable;
     private static LayoutInflater inflater = null;
+    SharedPreferences prefs;
 
     public CustomRelativeAdapter(MainMenuActivity activity, ArrayList<JSONObject> jsonArray, String functionTag, boolean playable){
         result = jsonArray;
         context = activity;
         this.playable = playable;
         this.functionTag = functionTag;
+        prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         inflater = (LayoutInflater)context.
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -75,7 +79,9 @@ public class CustomRelativeAdapter extends BaseAdapter{
         rowView = inflater.inflate(R.layout.custom_relative_adapter, parent, false);
         holder.username = (TextView) rowView.findViewById(R.id.username);
         try {
-            holder.username.setText(result.get(position).getJSONObject("player2").getString("username"));
+            if(result.get(position).getJSONObject("player1").getString("username").equals(prefs.getString("username", "#notavalidname"))){
+            holder.username.setText(result.get(position).getJSONObject("player2").getString("username"));}
+            else{ holder.username.setText(result.get(position).getJSONObject("player1").getString("username"));}
         } catch (JSONException e) {
             e.printStackTrace();
         }
