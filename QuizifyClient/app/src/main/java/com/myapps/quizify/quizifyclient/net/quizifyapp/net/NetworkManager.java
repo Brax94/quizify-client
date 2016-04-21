@@ -11,6 +11,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -197,6 +198,9 @@ public class NetworkManager {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        Log.d("INVITE_ERROR", error.toString());
+                        Log.d( "INVITE_VOLLY_ERROR",error.networkResponse.data + " : " +
+                                error.networkResponse.toString());
                         listener.getResult(error.getMessage() + " , THIS IS AN ERROR", null);
                     }
                 }) {
@@ -280,6 +284,32 @@ public class NetworkManager {
     }
     public void destroy(){
         this.instance = null;
+    }
+
+    public void searchPlayer(String username,final APIObjectResponseListener<String, JSONObject> listener) {
+
+        String url = prefixURL + "/search_by_username/";
+
+        Map<String, Object> jsonParams = new HashMap<>();
+        jsonParams.put("username", username);
+
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                (Request.Method.POST, url, new JSONObject(jsonParams), new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                            listener.getResult(null, response);
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG + ": ", "Error Response code: " + error.getMessage());
+                        listener.getResult(error.getMessage() + ": THIS IS AN ERRROR", null);
+                    }
+                });
+
+        requestQueue.add(jsObjRequest);
     }
 
     public void acceptInvite() {

@@ -16,11 +16,20 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonRequest;
 import com.myapps.quizify.quizifyclient.R;
 import com.myapps.quizify.quizifyclient.game.CategoryActivity;
 import com.myapps.quizify.quizifyclient.net.quizifyapp.net.APIObjectResponseListener;
 import com.myapps.quizify.quizifyclient.net.quizifyapp.net.NetworkManager;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
 import java.util.Map;
 
 public class NewGame extends AppCompatActivity {
@@ -29,6 +38,8 @@ public class NewGame extends AppCompatActivity {
     View mProgressView;
     View mSuccessView;
     Intent sucessIntent;
+    final String url = "http://kane.royrvik.org:8000/search_by_username";
+    int id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,31 +66,36 @@ public class NewGame extends AppCompatActivity {
                 }
                 if(!cancel) {
                     showProgress(true);
-                    NetworkManager.getInstance(NewGame.this).sendInvite(mInviteView.getText().toString(), new APIObjectResponseListener<String, Map<String, Object>>() {
+
+                    NetworkManager.getInstance(NewGame.this).searchPlayer(mInviteView.getText().toString(), new APIObjectResponseListener<String, JSONObject>() {
                         @Override
-                        public void getResult(String error, Map<String, Object> result) {
-                            if (error != null) {
+                        public void getResult(String error, JSONObject result) {
+                            if(error != null){
                                 showProgress(false);
                                 mInviteView.setError("Can't find any user with that name");
                                 mInviteView.requestFocus();
                                 return;
-                            } else {
-                                Log.d("ELIAS_NMCHECK", "Result: " + result.toString());
+                            }
+                            String id = null;
+                            try {
+                                id = result.getString("id");
+                                inviteUser(id);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                                 showProgress(false);
-                                showSuccess(true);
-                                try {
-                                    //Flashes success screen, or should, at least!
-                                    Thread.sleep(1200);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                                showSuccess(false);
-                                startActivity(sucessIntent);
-                                finish();
+                                mInviteView.setError("Can't find any user with that name");
+                                mInviteView.requestFocus();
+                                return;
                             }
 
                         }
                     });
+
+
+
+
+
+
                 }
             }
         });
@@ -130,6 +146,33 @@ public class NewGame extends AppCompatActivity {
     public void showSuccess(boolean show){
         mInvFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         mSuccessView.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+    public void inviteUser(String id){
+        NetworkManager.getInstance(NewGame.this).sendInvite(id, new APIObjectResponseListener<String, Map<String, Object>>() {
+            @Override
+            public void getResult(String error, Map<String, Object> result) {
+                if (error != null) {
+                    showProgress(false);
+                    mInviteView.setError("Can't find any user with that name");
+                    mInviteView.requestFocus();
+                    return;
+                } else {
+                    Log.d("ELIAS_NMCHECK", "Result: " + result.toString());
+                    showProgress(false);
+                    showSuccess(true);
+                    try {
+                        //Flashes success screen, or should, at least!
+                        Thread.sleep(1200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    showSuccess(false);
+                    startActivity(sucessIntent);
+                    finish();
+                }
+
+            }
+        });
     }
 
 }
