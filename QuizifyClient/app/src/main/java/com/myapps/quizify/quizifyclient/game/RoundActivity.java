@@ -6,7 +6,13 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
+import android.media.Image;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -31,6 +37,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -111,6 +118,9 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
 
         mProgressView = findViewById(R.id.round_process);
         mRoundView = findViewById(R.id.round_form);
+
+        ImageView mVsImage = (ImageView) findViewById(R.id.vs);
+        mVsImage.setImageBitmap(BitmapFactory.decodeResource(Resources.getSystem(), R.drawable.vs));
 
         getServerData();
     }
