@@ -6,21 +6,13 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.JsonRequest;
 import com.myapps.quizify.quizifyclient.R;
 import com.myapps.quizify.quizifyclient.game.CategoryActivity;
 import com.myapps.quizify.quizifyclient.net.quizifyapp.net.APIObjectResponseListener;
@@ -29,7 +21,6 @@ import com.myapps.quizify.quizifyclient.net.quizifyapp.net.NetworkManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class NewGame extends AppCompatActivity {
@@ -38,8 +29,6 @@ public class NewGame extends AppCompatActivity {
     View mProgressView;
     View mSuccessView;
     Intent sucessIntent;
-    final String url = "http://kane.royrvik.org:8000/search_by_username";
-    int id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,16 +89,6 @@ public class NewGame extends AppCompatActivity {
             }
         });
 
-        Button b1 =(Button) findViewById(R.id.Categories);
-
-        b1.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(NewGame.this, CategoryActivity.class);
-                startActivity(i);
-            }
-        });
-
     }
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     public void showProgress(final boolean show) {
@@ -144,8 +123,9 @@ public class NewGame extends AppCompatActivity {
         }
     }
     public void showSuccess(boolean show){
-        mInvFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         mSuccessView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mInvFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+        mProgressView.setVisibility(View.GONE);
     }
     public void inviteUser(String id){
         NetworkManager.getInstance(NewGame.this).sendInvite(id, new APIObjectResponseListener<String, Map<String, Object>>() {
@@ -160,13 +140,6 @@ public class NewGame extends AppCompatActivity {
                     Log.d("ELIAS_NMCHECK", "Result: " + result.toString());
                     showProgress(false);
                     showSuccess(true);
-                    try {
-                        //Flashes success screen, or should, at least!
-                        Thread.sleep(1200);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    showSuccess(false);
                     startActivity(sucessIntent);
                     finish();
                 }
