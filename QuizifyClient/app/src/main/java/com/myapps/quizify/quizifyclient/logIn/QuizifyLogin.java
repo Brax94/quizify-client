@@ -310,7 +310,7 @@ public class QuizifyLogin extends Activity implements LoaderCallbacks<Cursor> {
 
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(QuizifyLogin.this);
                 prefs.edit().putBoolean("isLogin", isLogin).commit();
-                prefs.edit().putString("username", mEmail).commit();
+                prefs.edit().putString("username", mEmail.trim()).commit();
 
 
                 Intent intent = new Intent(QuizifyLogin.this, MainMenuActivity.class);

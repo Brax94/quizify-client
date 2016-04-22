@@ -120,6 +120,7 @@ public class CustomRelativeAdapter extends BaseAdapter{
                         Log.d("ELIAS_ERROR", "SOMETHING WENT VERY WRONG WITH FINDING ID");
                     }
                     context.startActivity(i);
+                    Log.d("ELIAS_ERROR", "WORKS TO HERE");
 
                 }
             });

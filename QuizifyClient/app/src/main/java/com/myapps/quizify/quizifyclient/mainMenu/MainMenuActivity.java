@@ -129,6 +129,7 @@ public class MainMenuActivity extends Activity {
             if(game.getString("invitation_status").equals("accepted")){
                 JSONArray array = game.getJSONArray("rounds");
                 if(array.length() != 0){
+                    Log.d("USERNAME_CHECK", "" + array.getJSONObject(array.length()-1).getJSONObject("whos_turn").getString("username").equals(prefs.getString("username", "#noValidUsername")) + array.getJSONObject(array.length()-1).getJSONObject("whos_turn").getString("username"));
                     if(array.getJSONObject(array.length()-1).getJSONObject("whos_turn").getString("username").equals(prefs.getString("username", "#noValidUsername"))){
                         yourTurn.add(game);
                     }
