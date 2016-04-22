@@ -64,7 +64,7 @@ public class CategoryActivity extends Activity {
             gameType = getIntent().getStringExtra("game_type");
             if(gameType.equals("Play")){
                 Intent i = new Intent(CategoryActivity.this, RoundActivity.class);
-                i.putExtra("id", getIntent().getIntExtra("id",-1));
+                i.putExtra("game_id", getIntent().getIntExtra("game_id",-1));
                 startActivity(i);
             }
         }

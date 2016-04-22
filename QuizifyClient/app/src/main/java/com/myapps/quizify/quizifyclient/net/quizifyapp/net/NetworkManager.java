@@ -151,7 +151,7 @@ public class NetworkManager {
     }
 
     public void getSingleGame(int id, final APIObjectResponseListener<String, JSONObject> listener) {
-        String url = prefixURL + "/games/" + id;
+        String url = prefixURL + "/games/" + id + "/";
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, new JSONObject(),
                 new Response.Listener<JSONObject>() {
