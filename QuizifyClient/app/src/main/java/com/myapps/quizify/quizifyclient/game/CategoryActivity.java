@@ -66,6 +66,7 @@ public class CategoryActivity extends Activity {
                 Intent i = new Intent(CategoryActivity.this, RoundActivity.class);
                 i.putExtra("game_id", getIntent().getIntExtra("game_id",-1));
                 startActivity(i);
+                finish();
             }
         }
 

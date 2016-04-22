@@ -119,8 +119,8 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
         mProgressView = findViewById(R.id.round_process);
         mRoundView = findViewById(R.id.round_form);
 
-        ImageView mVsImage = (ImageView) findViewById(R.id.vs);
-        mVsImage.setImageBitmap(BitmapFactory.decodeResource(Resources.getSystem(), R.drawable.vs));
+        //ImageView mVsImage = (ImageView) findViewById(R.id.vs);
+        //mVsImage.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.vs));
 
         getServerData();
     }

@@ -36,14 +36,14 @@
             android:fontFamily="monospace"
             android:textColor="#ffffff"
             />
-        <ImageView
-            android:id="@+id/vs"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:contentDescription="Vs-picture"
-            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="VS"
+            android:textColor="#C40808"
+            android:textSize="40sp"/>
+
+
         <TextView android:id="@+id/round_player2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
