@@ -45,17 +45,14 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
 
     private String opponent;
     private String player;
-    private String category;
-
-    private int roundNumber;
-
     private int score;
+    private int currentQuestion;
 
     private List<String> songUrls;
     private List<List<String>> alternatives;
     private List<String> correctAlternatives;
 
-    private int currentQuestion;
+    //GUI elements
     private MediaPlayer mMediaPlayer;
     private ProgressBar bar;
     private CountDownTimer timer;
@@ -68,6 +65,7 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
     private TextView p1;
     private TextView p2;
 
+    //IDs
     private int gameId;
     private int roundId;
     private int categoryId;
