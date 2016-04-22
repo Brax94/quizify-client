@@ -189,8 +189,10 @@ public class NetworkManager {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
+                            System.out.println("Successful invite");
                             listener.getResult(null, Utils.jsonToMap(response));
                         } catch (JSONException e) {
+                            System.out.println("Something went wrong jsonexception");
                             listener.getResult("Server responded with invalid data", null);
                         }
                     }
@@ -198,6 +200,8 @@ public class NetworkManager {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        System.out.println(error.networkResponse.data);
+                        error.printStackTrace();
                         Log.d("INVITE_ERROR", error.toString());
                         Log.d( "INVITE_VOLLY_ERROR",error.networkResponse.data + " : " +
                                 error.networkResponse.toString());
