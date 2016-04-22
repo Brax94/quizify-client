@@ -211,4 +211,8 @@ public class CategoryActivity extends Activity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if(getIntent().hasExtra("game_type")) super.onBackPressed();
+    }
 }

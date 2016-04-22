@@ -94,10 +94,12 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
             finish();
             startActivity(i);
         }
-        if(getIntent().hasExtra("category_id")){if (getIntent().getIntExtra("category_id", -1) == -1){
-            Intent i = new Intent(RoundActivity.this, MainMenuActivity.class);
-            finish();
-            startActivity(i);
+        if(getIntent().hasExtra("category_id")){
+            categoryId = getIntent().getIntExtra("category_id", -1);
+            if (categoryId == -1){
+                Intent i = new Intent(RoundActivity.this, MainMenuActivity.class);
+                finish();
+                startActivity(i);
             }
         }
 
@@ -115,6 +117,7 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
         getServerData();
     }
 
+    //Initialization
     private void getServerData(){
         correctAlternatives = new ArrayList<>();
         songUrls = new ArrayList<>();
@@ -125,56 +128,66 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
         if(getIntent().hasExtra("category_id")) {
             if(getIntent().hasExtra("game_type")) {
                 if (getIntent().getStringExtra("game_type").equals("Accept")) {
-                    System.out.println("I WANT TO ACCEPT");
-                    NetworkManager.getInstance(getApplicationContext()).acceptInvite(gameId, getIntent().getIntExtra("category_id", -1), new APIObjectResponseListener<String, JSONObject>() {
-                        @Override
-                        public void getResult(String error, JSONObject result) {
-                            if (error != null) {
-                                System.err.print(error);
-                                return;
-                            }
-                            try {
-                               initRound(result);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
+                    initFromAccept();
                 }
             }else{
-                NetworkManager.getInstance(getApplicationContext()).newRound(gameId, getIntent().getIntExtra("category_id", -1), new APIObjectResponseListener<String, JSONObject>() {
-                    @Override
-                    public void getResult(String error, JSONObject result) {
-                        if (error != null) {
-                            System.err.print(error);
-                            return;
-                        }
-                        try {
-                            initRound(result);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
+                initFromCategory();
             }
         }else{
-            NetworkManager.getInstance(getApplicationContext()).getSingleGame(gameId, new APIObjectResponseListener<String, JSONObject>() {
-                @Override
-                public void getResult(String error, JSONObject result) {
-                    if (error != null) {
-                        System.err.print(error);
-                        return;
-                    }
-                    try {
-                        initRound(result);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+            initFromMainMenu();
         }
     }
 
+    private void initFromCategory(){
+        NetworkManager.getInstance(getApplicationContext()).newRound(gameId, categoryId, new APIObjectResponseListener<String, JSONObject>() {
+            @Override
+            public void getResult(String error, JSONObject result) {
+                if (error != null) {
+                    System.err.print(error);
+                    return;
+                }
+                try {
+                    initRound(result);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void initFromAccept(){
+        NetworkManager.getInstance(getApplicationContext()).acceptInvite(gameId, getIntent().getIntExtra("category_id", -1), new APIObjectResponseListener<String, JSONObject>() {
+            @Override
+            public void getResult(String error, JSONObject result) {
+                if (error != null) {
+                    System.err.print(error);
+                    return;
+                }
+                try {
+                    initRound(result);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void initFromMainMenu(){
+        NetworkManager.getInstance(getApplicationContext()).getSingleGame(gameId, new APIObjectResponseListener<String, JSONObject>() {
+            @Override
+            public void getResult(String error, JSONObject result) {
+                if (error != null) {
+                    System.err.print(error);
+                    return;
+                }
+                try {
+                    initRound(result);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
 
     private void chooseAlternative(int i) {
         timer.cancel();
@@ -187,7 +200,7 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
         this.score += score;
 
         if(++currentQuestion == NUMBER_OF_QUESTIONS){
-            sendScore(score);
+            sendScore();
         }
         else{askQuestion();}
     }
@@ -226,20 +239,18 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
 
     public void askQuestion(){
         updateButtonText();
-        //play song from data resource
-        mMediaPlayer = new MediaPlayer();
-        mMediaPlayer.setOnPreparedListener(this);
-        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mMediaPlayer.reset();
         try{
             mMediaPlayer.setDataSource(currentSongURL());
+            mMediaPlayer.prepare();
         }catch (IllegalArgumentException e){
-            e.printStackTrace();
+        e.printStackTrace();
 
         } catch (IOException e) {
-            e.printStackTrace();
+        e.printStackTrace();
 
         }
-        mMediaPlayer.prepareAsync();
+        mMediaPlayer.start();
     }
 
 
@@ -284,6 +295,21 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
             }
         });
 
+        //play song from data resource
+        mMediaPlayer = new MediaPlayer();
+        mMediaPlayer.setOnPreparedListener(this);
+        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        try{
+            mMediaPlayer.setDataSource(currentSongURL());
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
+        mMediaPlayer.prepareAsync();
+
         askQuestion();
     }
 
@@ -293,8 +319,16 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
 
     private void parseJson(JSONObject array) throws JSONException{
         JSONArray rounds = array.getJSONArray("rounds");
-        String cPlayer = rounds.getJSONObject(rounds.length()-1).getJSONObject("whos_turn").getString("username");
-        roundId = rounds.getJSONObject(rounds.length()-1).getInt("id");
+        JSONObject currentRound = null;
+        for(int i =0; i < rounds.length(); i++){
+            if((rounds.getJSONObject(i)).getString("status").equals("active")){
+                currentRound = rounds.getJSONObject(i);
+                break;
+            }
+        }
+        if(currentRound == null){}
+        String cPlayer = currentRound.getJSONObject("whos_turn").getString("username");
+        roundId = currentRound.getInt("id");
         player = array.getJSONObject("player1").getString("username");
         opponent = array.getJSONObject("player2").getString("username");
         if(!player.equals(cPlayer)){
@@ -302,7 +336,7 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
             player = cPlayer;
         }
 
-        JSONArray questions = rounds.getJSONObject(rounds.length() - 1).getJSONArray("questions");
+        JSONArray questions = currentRound.getJSONArray("questions");
 
         for(int i = 0; i < NUMBER_OF_QUESTIONS; i++){
             String choice = randomButtonChoice();
@@ -326,7 +360,7 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
 
     }
 
-    private void sendScore(int score){
+    private void sendScore(){
         NetworkManager.getInstance(getApplicationContext()).saveRound(roundId, score, new APIObjectResponseListener<String, JSONObject>() {
             @Override
             public void getResult(String error, JSONObject result) {
