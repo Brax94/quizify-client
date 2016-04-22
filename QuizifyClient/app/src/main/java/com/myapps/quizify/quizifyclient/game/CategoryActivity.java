@@ -53,6 +53,7 @@ public class CategoryActivity extends Activity {
 
     private View mProgressView;
     private View mCategoryView;
+    private String gameType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +61,8 @@ public class CategoryActivity extends Activity {
 
 
         if (getIntent().hasExtra("game_type")){
-            if(getIntent().getStringExtra("game_type").equals("Play")){
+            gameType = getIntent().getStringExtra("game_type");
+            if(gameType.equals("Play")){
                 Intent i = new Intent(CategoryActivity.this, RoundActivity.class);
                 i.putExtra("id", getIntent().getIntExtra("id",-1));
                 startActivity(i);
@@ -88,6 +90,8 @@ public class CategoryActivity extends Activity {
         Intent i = new Intent(CategoryActivity.this, RoundActivity.class);
         i.putExtra("category_id", categoryIds[category]);
         i.putExtra("game_id", getIntent().getIntExtra("game_id", -1));
+        if(getIntent().hasExtra("game_type")) i.putExtra("game_type", gameType);
+        System.out.println("HELLOTHERE " + gameType);
         finish();
         startActivity(i);
     }

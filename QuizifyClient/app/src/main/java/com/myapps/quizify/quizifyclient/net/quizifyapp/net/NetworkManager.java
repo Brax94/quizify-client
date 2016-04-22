@@ -375,4 +375,35 @@ public class NetworkManager {
 
         requestQueue.add(request);
     }
+    public void acceptInvite(int gameId, int categoryId, final APIObjectResponseListener<String,JSONObject> listener) {
+        String url = prefixURL + "/accept_invite/";
+
+        Map<String, Object> jsonParams = new HashMap<>();
+        jsonParams.put("game", gameId);
+        jsonParams.put("category", categoryId);
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(jsonParams),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        listener.getResult(null, response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG + ": ", "Error Response code: " + error.networkResponse.data);
+                        listener.getResult(error.getMessage(), null);
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> params =  new HashMap<>();
+                params.put("Authorization", "Bearer " + authKey);
+                return params;
+            }
+        };
+
+        requestQueue.add(request);
+    }
 }

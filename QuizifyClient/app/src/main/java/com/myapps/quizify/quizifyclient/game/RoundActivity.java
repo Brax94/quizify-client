@@ -233,25 +233,47 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
         this.currentQuestion = 0;
 
         if(getIntent().hasExtra("category_id")) {
-            NetworkManager.getInstance(getApplicationContext()).newRound(gameId, getIntent().getIntExtra("category_id", -1), new APIObjectResponseListener<String, JSONObject>() {
-                @Override
-                public void getResult(String error, JSONObject result) {
-                    if (error != null) {
-                        System.err.print(error);
-                        return;
-                    }
-                    try {
-                        parseJson(result);
-                        p1.setText(player);
-                        p2.setText(opponent);
-                        askQuestion();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+            if(getIntent().hasExtra("game_type")) {
+                if (getIntent().getStringExtra("game_type").equals("Accept")) {
+                    System.out.println("I WANT TO ACCEPT");
+                    NetworkManager.getInstance(getApplicationContext()).acceptInvite(gameId, getIntent().getIntExtra("category_id", -1), new APIObjectResponseListener<String, JSONObject>() {
+                        @Override
+                        public void getResult(String error, JSONObject result) {
+                            if (error != null) {
+                                System.err.print(error);
+                                return;
+                            }
+                            try {
+                                parseJson(result);
+                                p1.setText(player);
+                                p2.setText(opponent);
+                                askQuestion();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
                 }
-            });
-        }
-        else{
+            }else{
+                NetworkManager.getInstance(getApplicationContext()).newRound(gameId, getIntent().getIntExtra("category_id", -1), new APIObjectResponseListener<String, JSONObject>() {
+                    @Override
+                    public void getResult(String error, JSONObject result) {
+                        if (error != null) {
+                            System.err.print(error);
+                            return;
+                        }
+                        try {
+                            parseJson(result);
+                            p1.setText(player);
+                            p2.setText(opponent);
+                            askQuestion();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        }else{
                 NetworkManager.getInstance(getApplicationContext()).getSingleGame(gameId, new APIObjectResponseListener<String, JSONObject>() {
                     @Override
                     public void getResult(String error, JSONObject result) {
