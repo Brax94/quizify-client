@@ -77,11 +77,20 @@ public class CustomRelativeAdapter extends BaseAdapter{
         Holder holder=new Holder();
         View rowView;
         rowView = inflater.inflate(R.layout.custom_relative_adapter, parent, false);
+        String split = " : ";
+
         holder.username = (TextView) rowView.findViewById(R.id.username);
         try {
             if(result.get(position).getJSONObject("player1").getString("username").equals(prefs.getString("username", "#notavalidname"))){
-            holder.username.setText(result.get(position).getJSONObject("player2").getString("username"));}
-            else{ holder.username.setText(result.get(position).getJSONObject("player1").getString("username"));}
+            holder.username.setText(result.get(position).getJSONObject("player2").getString("username"));
+            holder.score.setText(result.get(position).getJSONObject("total_score").getString("player1") + " : " +
+                    result.get(position).getJSONObject("total_score").getString("player2"));
+            }
+            else{
+                holder.username.setText(result.get(position).getJSONObject("player1").getString("username"));
+                holder.score.setText(result.get(position).getJSONObject("total_score").getString("player2") + split +
+                        result.get(position).getJSONObject("total_score").getString("player1"));
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -89,8 +98,9 @@ public class CustomRelativeAdapter extends BaseAdapter{
         //TODO: Fix score as soon as it is contained within json
         //Score holder dummy:
         Random rand = new Random();
-        String dummy = rand.nextInt(6) + " : " + rand.nextInt(6);
-        holder.score.setText(dummy);
+        //String dummy = rand.nextInt(6) + " : " + rand.nextInt(6);
+        //holder.score.setText(dummy);
+
 
         holder.functionTag = (TextView)  rowView.findViewById(R.id.functionTag);
         holder.functionTag.setText(functionTag);
