@@ -83,8 +83,8 @@ public class CustomRelativeAdapter extends BaseAdapter{
         try {
             if(result.get(position).getJSONObject("player1").getString("username").equals(prefs.getString("username", "#notavalidname"))){
             holder.username.setText(result.get(position).getJSONObject("player2").getString("username"));
-            holder.score.setText(result.get(position).getJSONObject("total_score").getString("player1") + " : " +
-                    result.get(position).getJSONObject("total_score").getString("player2"));
+          //  holder.score.setText(result.get(position).getJSONObject("total_score").getString("player1") + " : " +
+            //        result.get(position).getJSONObject("total_score").getString("player2"));
             }
             else{
                 holder.username.setText(result.get(position).getJSONObject("player1").getString("username"));
