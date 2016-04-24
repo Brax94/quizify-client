@@ -4,15 +4,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
+import android.graphics.Color;
 import android.media.AudioManager;
-import android.media.Image;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -20,29 +14,22 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.android.volley.RequestQueue;
 import com.myapps.quizify.quizifyclient.R;
 import com.myapps.quizify.quizifyclient.mainMenu.MainMenuActivity;
 import com.myapps.quizify.quizifyclient.net.quizifyapp.net.APIObjectResponseListener;
 import com.myapps.quizify.quizifyclient.net.quizifyapp.net.NetworkManager;
-import com.myapps.quizify.quizifyclient.util.RequestHandler;
-import com.myapps.quizify.quizifyclient.util.SystemUiHider;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 
@@ -63,10 +50,10 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
     private MediaPlayer mMediaPlayer;
     private ProgressBar bar;
     private CountDownTimer timer;
-    private Button btn;
-    private Button btn1;
-    private Button btn2;
-    private Button btn3;
+
+    private List<Button> buttons;
+    private int[] ids = new int[]{R.id.alternative, R.id.alternative1,R.id.alternative2,R.id.alternative3};
+
     private Button disp;
     private Button disp2;
     private TextView p1;
@@ -82,6 +69,7 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
     private View mRoundView;
 
 
+    private int correctAnswer(){return alternatives.get(currentQuestion).indexOf(correctAlternatives.get(currentQuestion));}
     private String currentSongURL(){return songUrls.get(currentQuestion);}
     private List<String> currentAlternatives(){return alternatives.get(currentQuestion);}
     private boolean checkAlternative(int alternative){return alternatives.get(currentQuestion).get(alternative).equals(correctAlternatives.get(currentQuestion));}
@@ -122,6 +110,7 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
         //ImageView mVsImage = (ImageView) findViewById(R.id.vs);
         //mVsImage.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.vs));
 
+        buttons = new ArrayList<>();
         getServerData();
     }
 
@@ -199,13 +188,19 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
 
     private void chooseAlternative(int i) {
         timer.cancel();
-        if(checkAlternative(i)) nextRound(bar.getProgress());
-        else nextRound(0);
+        if(checkAlternative(i)){
+            nextRound(bar.getProgress());
+        }
+        else {
+            nextRound(0);
+        }
     }
 
     private void nextRound(int score){
         mMediaPlayer.stop();
+
         this.score += score;
+
 
         if(++currentQuestion == NUMBER_OF_QUESTIONS){
             sendScore();
@@ -215,10 +210,12 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
 
     private void updateButtonText(){
         List<String> alternatives = currentAlternatives();
-        btn.setText((CharSequence) alternatives.get(0));
-        btn1.setText((CharSequence) alternatives.get(1));
-        btn2.setText((CharSequence) alternatives.get(2));
-        btn3.setText((CharSequence) alternatives.get(3));
+        for (int i = 0; i < buttons.size(); i++){
+            buttons.get(i).setEnabled(true);
+            buttons.get(i).setBackgroundResource(android.R.drawable.btn_default);
+            buttons.get(i).setText((CharSequence) alternatives.get(i));
+
+        }
         disp.setText((CharSequence) "Score: " + Integer.toString(score));
         disp2.setText((CharSequence) "Round: " + Integer.toString(currentQuestion + 1));
 
@@ -274,29 +271,30 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
         parseJson(serverData);
         p1.setText(player);
         p2.setText(opponent);
-        btn = (Button) findViewById(R.id.alternative);
-        btn.setOnClickListener(new View.OnClickListener() {
+        for(int i = 0; i < 4; i++){
+            Button btn = (Button) findViewById(ids[i]);
+            buttons.add(btn);
+        }
+        buttons.get(0).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 chooseAlternative(0);
+
             }
         });
-        btn1 = (Button) findViewById(R.id.alternative1);
-        btn1.setOnClickListener(new View.OnClickListener() {
+        buttons.get(1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 chooseAlternative(1);
             }
         });
-        btn2 = (Button) findViewById(R.id.alternative2);
-        btn2.setOnClickListener(new View.OnClickListener() {
+        buttons.get(2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 chooseAlternative(2);
             }
         });
-        btn3 = (Button) findViewById(R.id.alternative3);
-        btn3.setOnClickListener(new View.OnClickListener() {
+        buttons.get(3).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 chooseAlternative(3);
@@ -436,38 +434,6 @@ public class RoundActivity extends Activity implements MediaPlayer.OnPreparedLis
 
                 disp = (Button) findViewById(R.id.displayButton);
                 disp2 = (Button) findViewById(R.id.displayButton2);
-
-                btn = (Button) findViewById(R.id.alternative);
-                btn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        chooseAlternative(0);
-                    }
-                });
-
-                btn1 = (Button) findViewById(R.id.alternative1);
-                btn1.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        chooseAlternative(1);
-                    }
-                });
-
-                btn2 = (Button) findViewById(R.id.alternative2);
-                btn2.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        chooseAlternative(2);
-                    }
-                });
-
-                btn3 = (Button) findViewById(R.id.alternative3);
-                btn3.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        chooseAlternative(3);
-                    }
-                });
 
                 askQuestion();
             }

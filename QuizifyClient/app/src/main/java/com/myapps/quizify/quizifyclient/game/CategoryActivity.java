@@ -4,43 +4,22 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.google.android.gms.games.Game;
-import com.google.gson.JsonObject;
 import com.myapps.quizify.quizifyclient.R;
-import com.myapps.quizify.quizifyclient.mainMenu.MainMenuActivity;
-import com.myapps.quizify.quizifyclient.net.quizifyapp.net.APIAuthenticationResponseListener;
 import com.myapps.quizify.quizifyclient.net.quizifyapp.net.APIObjectResponseListener;
 import com.myapps.quizify.quizifyclient.net.quizifyapp.net.NetworkManager;
-import com.myapps.quizify.quizifyclient.util.RequestHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class CategoryActivity extends Activity {
@@ -125,6 +104,7 @@ public class CategoryActivity extends Activity {
                         serverAuth = false;
                     }catch(JSONException e){
                         e.printStackTrace();
+                        serverAuth = false;
                     }
 
                 }
